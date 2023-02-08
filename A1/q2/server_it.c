@@ -9,7 +9,6 @@
 #define send_chunk_size 5
 #define receive_chunk_size 5
 #include <math.h>
-
 /*
 1. You may assume that parenthesis will not be nested (So no (...(...)...) etc.)
 
@@ -139,7 +138,7 @@ double evaluate_exp(char *expr)
             integer = 0;
             fraction = 0.0;
             frac = 0;
-            while (expr[i] != '\0' && expr[i] != ' '  && expr[i] != '\t' && expr[i] != '+' && expr[i] != '-' && expr[i] != '/' && expr[i] != '*')
+            while (expr[i] != '\0' && expr[i] != ' ' && expr[i] != '\t' && expr[i] != '+' && expr[i] != '-' && expr[i] != '/' && expr[i] != '*')
             {
 
                 if (expr[i] == '.')
@@ -198,7 +197,7 @@ int main()
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_addr.sin_port = htons(2000);
 
-    if (bind(sockfd, (struct sock_addr *)&serv_addr, sizeof(serv_addr)) == -1)
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
     {
         perror("Cannot bind to socket \n");
         exit(1);
@@ -210,7 +209,7 @@ int main()
     {
         clilen = sizeof(cli_addr);
 
-        newsockfd = accept(sockfd, (struct sock_addr *)&cli_addr, &clilen);
+        newsockfd = accept(sockfd, (struct sockaddr *)&cli_addr, &clilen);
         if (newsockfd == -1)
         {
             perror("Connection error\n");
