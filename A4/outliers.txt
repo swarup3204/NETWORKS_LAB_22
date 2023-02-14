@@ -1,0 +1,30 @@
+1.Inconsistency in request message - Bad request
+The HyperText Transfer Protocol (HTTP) 400 Bad Request response status code indicates that the server cannot or will not process the request due to something that is perceived to be a client error (for example, malformed request syntax, invalid request message framing, or deceptive request routing).
+2.Forbidden request if file has different privileges
+The HTTP 403 Forbidden response status code indicates that the server understands the request but refuses to authorize it.
+3.The HTTP 404 Not Found response status code indicates that the server cannot find the requested resource. Links that lead to a 404 page are often called broken or dead links and can be subject to link rot.
+4.Did not handle last-modified conditional header in request message 
+5.Did not handle any case of bad request
+6.Times out while sending file if file is large
+7.My PUT request can also generate a new file (so uploading document / u can also replace a document but you can get a forbidden request error otherwise)
+8.Works fine mostly if file small,certain types,no error in request
+10.unecessary testing.txt being made 
+11.can supply files only from current directory
+12.AccessLog.txt being made after recv_request call,ideally should be before it
+
+
+cmds to test on
+==================
+
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/Assgn-4.pdf:20000
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/Assgn-3.pdf:20000
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/ta_ir_mails.jpeg:20000
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/smol_img.jpg:20000
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/old.txt:20000
+
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/vsp.pdf:20000
+GET http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/vsp:20000
+PUT http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/new.txt:20000 old.txt
+
+PUT http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/new_img.jpg:20000 smol_img.jpg
+PUT http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/new.pdf:20000 vsp.pdf
