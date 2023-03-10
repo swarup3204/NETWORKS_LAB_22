@@ -5,3 +5,6 @@ server_it:server_it.c
 
 client:client.c
 		gcc client.c -o client
+
+clean:
+	 	rm client server_it

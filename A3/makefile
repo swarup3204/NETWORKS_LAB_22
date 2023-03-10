@@ -7,4 +7,7 @@ server:server.c
 	gcc -o server server.c -g
 
 client:client.c
-	gcc -o client client.c -g
+	gcc -o client client.c -
+	
+clean:
+	rm lb server client
