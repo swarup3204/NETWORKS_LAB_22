@@ -7,5 +7,5 @@ MyHTTP:MyHTTP.c
 	gcc -o MyHTTP MyHTTP.c
 
 clean:
-	rm  MyHTTP MyBrowser new.pdf new.txt new_img.jpg
+	rm  MyHTTP MyBrowser new.pdf new.txt new_img.jpg AccessLog.txt
 
