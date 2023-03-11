@@ -17,8 +17,8 @@
 #define RECV_BUF_SZ 50
 #define TABLE_SZ 10
 
-char send_buf[SEND_BUF_SZ];
-char recv_buf[RECV_BUF_SZ];
+char *send_buf;
+char *recv_buf;
 
 typedef struct table_entry
 {

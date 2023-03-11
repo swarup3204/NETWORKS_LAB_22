@@ -170,6 +170,8 @@ int my_socket(int domain, int type, int protocol)
 	initialise_table(Received_Message_Table);
 	pthread_mutex_init(&send_flags_mutex, NULL);
 	pthread_mutex_init(&recv_flags_mutex, NULL);
+	send_buf = (char *)malloc(sizeof(char) * SEND_BUF_SZ);
+	recv_buf = (char *)malloc(sizeof(char) * RECV_BUF_SZ);
 	return sockfd;
 }
 int my_bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
@@ -245,18 +247,36 @@ int my_send(int sockfd, const void *buf, size_t len, int flags)
 	return (int)len;
 }
 // TODO clear table function
+void uninitialise(Table *Tble)
+{
+	//! start from head to tail and free individual elements
+	table_entry *temp;
+	// temp = Tble->head;
+	while (Tble->head != Tble->tail)
+	{
+		temp = Tble->head;
+		Tble->head = Tble->head->next;
+		free(temp->next);
+		free(temp);
+	}
+	free(Tble->head);
+	Tble->head = Tble->tail = NULL;
+	pthread_mutex_destroy(&Tble->table_lck);
+	pthread_cond_destroy(&Tble->table_cond);
+	Tble->table_sz = 0;
+}
 int my_close(int sockd)
 {
+	//&free all pointers
+	free(send_buf);
+	free(recv_buf);
 	//&destroy all mutexes
-	pthread_mutex_destroy(&globl_recv_flags);
-	pthread_mutex_destroy(&globl_send_flags);
-	pthread_mutex_destroy(&Send_Message_Table->table_lck);
-	pthread_mutex_destroy(&Received_Message_Table->table_lck);
-	//&destroy conds
-	pthread_cond_destroy(&Send_Message_Table->table_cond);
-	pthread_cond_destroy(&Received_Message_Table->table_cond);
+	pthread_mutex_destroy(&recv_flags_mutex);
+	pthread_mutex_destroy(&send_flags_mutex);
+	//&destroy tables
+	uninitialise(Send_Message_Table);
+	uninitialise(Received_Message_Table);
 	//&kill all threads
-	pthread_kill(tid_R,SIGKILL);
-	pthread_kill(tid_S,SIGKILL);
-
+	pthread_kill(tid_R, SIGKILL); //?correct way to do this
+	pthread_kill(tid_S, SIGKILL);
 }
