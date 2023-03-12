@@ -133,13 +133,15 @@ void *send_thread(void *param)
 		{
 			send_msg[i++] = entry->msg[j++];
 		}
+		char *ptr = send_msg;
 		while (total_len > 0)
 		{
 			int x = (total_len > SEND_BUF_SZ) ? SEND_BUF_SZ : total_len;
-			send(sockfd, send_msg, x, globl_send_flags);
-			send_msg += x;
+			send(sockfd, ptr, x, globl_send_flags);
+			ptr += x;
 			total_len -= x;
 		}
+		free(send_msg);
 		sleep(5); //*sleeps for 5 seconds
 	}
 }
