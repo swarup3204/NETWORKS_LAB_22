@@ -2,7 +2,7 @@ library:mysocket.o
 	ar rcs libmsocket.a mysocket.o
 
 mysocket.o:mysocket.c mysocket.h
-	gcc -c mysocket.c
+	gcc-12 -c mysocket.c
 	
 clean:
 	rm libmsocket.a mysocket.o

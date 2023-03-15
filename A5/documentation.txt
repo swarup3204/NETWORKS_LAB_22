@@ -1,1 +1,12 @@
 Explainations
+
+STATIC LIBRARY TO INCLUDE ANOTHER STATIC LIBRARY
+
+I have a case where there are two libraries lib1 and lib2. lib2 has dependencies on lib1. In my case lib2 is basically a high level wrapper around the functions inside lib1. The final application is just going to use functions from lib2 by including the relevant header. How do I statically build the libraries and link them to the final program?
+
+
+Static libraries are just archives of object (.o) files, so you can't have embedded dependency information. Something like ar cr lib1.a foo.o bar.o [more object files] will build your libraries.
+
+Because there is no dependency information, your main program has to link both the libraries and it's important to link lib1 after lib2 when lib2 depends on lib1 (otherwise the linker won't find the symbols that are unresolved in lib2). A linking step could therefore look like this (assuming you use gcc and your libraries are in the current directory):
+
+gcc -otest main.o -L. -Wl,-Bstatic -l2 -l1
