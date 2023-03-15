@@ -1,4 +1,4 @@
-#include "mysocket.h"
+#include <mysocket.h>
 
 char *send_buf;
 char *recv_buf;
@@ -91,14 +91,17 @@ void *recv_thread(void *param)
 				{
 					if (recv_buf[i] == ' ')
 					{
+						entry->msg_len[i] = '\0';
+						i++;
 						got_len = 1;
 						break;
 					}
 					entry->msg_len[i] = recv_buf[i];
 				}
 
-				entry->msg_len[i] = '\0';
-
+				if(got_len == 0){
+					continue;
+				}
 				len = atoi(entry->msg_len);
 
 				j = 0;
