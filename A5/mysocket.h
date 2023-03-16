@@ -25,7 +25,4 @@ int my_send(int sockfd, const void *buf, size_t len, int flags);
 int my_recv(int sockfd, void *buf, size_t len, int flags);
 int my_close(int fd);
 
-void *recv_thread(void *param);
-void *send_thread(void *param);
-
 #endif

@@ -1,12 +1,128 @@
-Explainations
+											Networks Lab Assignment 5
+											Team: Rounak Saha  (20CS30043)
+												  Swarup Padhi (20CS30062)
+										   ================================
 
-STATIC LIBRARY TO INCLUDE ANOTHER STATIC LIBRARY
+MACROS:
+	1.		Name:	      MAX_MSG_LEN
+			Definition:	  #define MAX_MSG_LEN 5000
+			Description:  Maximum length of the message that can be sent.
+	
+	2.		Name:	      MAX_MSG_DIGITS
+			Definition:	  #define MAX_MSG_DIGITS 4
+			Description:  Maximum number of digits in the length of the message.
+	
+	3.      Name:         SOCK_MyTCP
+			Definition:   #define SOCK_MyTCP 12
+			Description:  Socket type for MyTCP protocol.
+	
+	4.      Name:         SEND_BUF_SZ
+			Definition:   #define SEND_BUF_SZ 1000
+			Description:  Size of the send buffer. [ in one send call ]
+	
+	5.      Name:         RECV_BUF_SZ
+			Definition:   #define RECV_BUF_SZ 50
+			Description:  Size of the receive buffer. [ in one recv call ]
+	
+	6.      Name:         TABLE_SZ
+			Definition:   #define TABLE_SZ 10
+			Description:  Maximum size of the Send_Message_Table and the Receive_Message_Table.
+	
+GLOBAL VARIABLES:
+	1.		Name:	      Send_Message_Table
+			Definition:	  Table* Send_Message_Table;
+	
+	2.		Name:         Received_Message_Table
+			Definition:	  Table* Receive_Message_Table;
 
-I have a case where there are two libraries lib1 and lib2. lib2 has dependencies on lib1. In my case lib2 is basically a high level wrapper around the functions inside lib1. The final application is just going to use functions from lib2 by including the relevant header. How do I statically build the libraries and link them to the final program?
+	3.		Name:         send_buf
+			Definition:	  char *send_buf;
+			Description:  A Dynamic character array to store the message to be sent in on send call.
+
+	4.		Name:         recv_buf
+			Definition:	  char *recv_buf;
+			Description:  A Dynamic character array to store the message received in on recv call.
+
+	5.		Name:         accept_cnt
+			Definition:	  int accept_cnt;
+			Description:  A counter to keep track of the number of accept calls made.
+
+	6.		Name:         connect_flag
+			Definition:	  int connect_flag;
+			Description:  A flag to keep track of whether the connect call has been made or not.
+	
+	7.		Name:		  tid_R
+			Definition:	  pthread_t tid_R;
+			Description:  The thread id of the R thread.
+
+	8.		Name:		  tid_S
+			Definition:	  pthread_t tid_S;
+			Description:  The thread id of the S thread.
 
 
-Static libraries are just archives of object (.o) files, so you can't have embedded dependency information. Something like ar cr lib1.a foo.o bar.o [more object files] will build your libraries.
+DATA STRUCTURES USED:
+    1.		Name:	      table_entry
+			Definition:	  typedef struct table_entry
+							{
+								char msg[MAX_MSG_LEN];
+								char msg_len[MAX_MSG_DIGITS + 1];
+								time_t timestamp;
+								struct table_entry *next;
+							} table_entry;
 
-Because there is no dependency information, your main program has to link both the libraries and it's important to link lib1 after lib2 when lib2 depends on lib1 (otherwise the linker won't find the symbols that are unresolved in lib2). A linking step could therefore look like this (assuming you use gcc and your libraries are in the current directory):
+			Type:		  struct
+			Description:  A structure to store the message, the length of the message, the timestamp [ when the entry in the table was created ] and the pointer to the next entry in the table.  
 
-gcc -otest main.o -L. -Wl,-Bstatic -l2 -l1
+	
+	2.		Name:	      Table
+			Definition:	  typedef struct Table
+							{
+								table_entry *head;
+								table_entry *tail;
+								pthread_mutex_t table_lck;
+								pthread_cond_t table_full_cond;
+								pthread_cond_t table_empty_cond;
+								size_t table_sz;
+
+							} Table;
+
+			Type:		  struct
+			Description:  The Table themselves have been implemented as a linked list with pointers to the head and tail of the linked list. The operations allowed on this linked list are push from back and pop from front [ same as in a Queue ]. This is to enable FIFO order of delivery of messages to the application. The table_lck is a mutex lock to ensure that only one thread can access that table at a time. The table_full_cond and table_empty_cond are condition variables to wait on when the table is full and when the table is empty respectively.We used pthread_cond_wait to wait efficiently instead of sleeping [ for which we need these conditional variables ]. The table_sz is the current size of the table.
+
+FUNCTIONS USED:
+	1.int my_socket (int sockfd, int domain, int type, int protocol):
+		- This function creates a socket of the specified type and returns the socket descriptor.
+		- The socket descriptor is stored in the sockfd variable.
+		- The domain, type and protocol are the same as the ones used in the socket() system call.
+		- The only allowed type is SOCK_MyTCP, any other type will result in a return value of -1 [failure] and errno set to EINVAL
+		- The function returns 0 on success and -1 on failure.
+	2.int my_bind (int sockfd, const struct sockaddr *addr, socklen_t addrlen):
+		- This function binds the socket to the specified address.
+		- The sockfd is the socket descriptor returned by the my_socket() function.
+		- The addr is the address to which the socket is to be bound.
+		- The addrlen is the length of the address.
+		- The function returns 0 on success and -1 on failure.
+	3.int my_listen (int sockfd, int backlog):
+		- This function puts the socket in the listening state.
+		- The sockfd is the socket descriptor returned by the my_socket() function.
+		- The backlog is the maximum number of pending connections that can be queued.
+		- The function returns 0 on success and -1 on failure.
+	4.int my_accept (int sockfd, struct sockaddr *addr, socklen_t *addrlen):
+		- This function accepts a connection on the socket.
+		- The sockfd is the socket descriptor returned by the my_socket() function.
+		- The addr is the address of the connecting client.
+		- The addrlen is the length of the address.
+		- If failure function returns immediately with a return value of -1.
+		- If success function initialises the Send_Message_Table and the Received_Message_Table, allocates memory dynamically for send_buf and recv_buf character pointers, creates the threads [ passing the newsockfd as the parameter ], increases the accept_cnt by 1 and returns a new socket descriptor on which the actual connection is made.
+	5.int my_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+
+	6.my_send
+	7.my_recv
+	8.my_close
+	9.send_thread
+	10.recv_thread
+	11.create_threads
+	12.queue_push
+	13.queue_pop
+	15.initialise_table
+	16.uninitialise_table

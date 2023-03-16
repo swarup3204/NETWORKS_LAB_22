@@ -3,6 +3,7 @@
 char *send_buf;
 char *recv_buf;
 int accept_cnt = 0;
+int connect_flag = 0;
 
 typedef struct table_entry
 {
@@ -273,6 +274,7 @@ int my_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 
 	create_threads(sockfd);
 
+	connect_cnt++;
 	return status;
 }
 int my_recv(int sockfd, void *buf, size_t len, int flags)
@@ -391,13 +393,14 @@ void uninitialise(Table **Tbl)
 int my_close(int sockfd)
 {
 
-	sleep(5);
+	// sleep(5);
 
-	if (accept_cnt == 0)
+	if (accept_cnt == 0 && connect_flag == 0)
 	{
 		int status = close(sockfd);
 		return status;
 	}
+
 	pthread_cancel(tid_R);
 	pthread_cancel(tid_S);
 
