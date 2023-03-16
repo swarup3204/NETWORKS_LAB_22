@@ -363,6 +363,20 @@ int my_send(int sockfd, const void *buf, size_t len, int flags)
 	return length;
 }
 
+void print_table(Table *Tbl)
+{
+	table_entry *temp = Tbl->head;
+
+	while (temp != Tbl->tail)
+	{
+		printf("%s %s %s", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+
+		temp = temp->next;
+	}
+
+	printf("%s %s %s", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+}
+
 void uninitialise(Table **Tbl)
 {
 	Table *Tble = *Tbl;
