@@ -363,18 +363,33 @@ int my_send(int sockfd, const void *buf, size_t len, int flags)
 	return length;
 }
 
-void print_table(Table *Tbl)
+void print_tables()
 {
-	table_entry *temp = Tbl->head;
+	printf("Send Message Table\n");
+	table_entry *temp = Send_Message_Table->head;
 
-	while (temp != Tbl->tail)
+	while (temp != Send_Message_Table->tail)
 	{
-		printf("%s %s %s", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+		printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
 
 		temp = temp->next;
 	}
 
-	printf("%s %s %s", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+	printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+
+	printf("Received Message Table\n");
+	
+	temp = Received_Message_Table->head;
+
+	while (temp != Received_Message_Table->tail)
+	{
+		printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+
+		temp = temp->next;
+	}
+
+	printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+
 }
 
 void uninitialise(Table **Tbl)

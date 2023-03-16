@@ -24,5 +24,6 @@ int my_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 int my_send(int sockfd, const void *buf, size_t len, int flags);
 int my_recv(int sockfd, void *buf, size_t len, int flags);
 int my_close(int fd);
+void print_tables();
 
 #endif
