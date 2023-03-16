@@ -12,7 +12,7 @@
 #define MAX_MSG_DIGITS 4
 #define SOCK_MyTCP 12 /* gave a new socket type number */
 #define SEND_BUF_SZ 1000
-#define RECV_BUF_SZ 50
+#define RECV_BUF_SZ 1000
 #define TABLE_SZ 10
 
 

@@ -5,15 +5,15 @@
 
 int main()
 {
-	int sockfd, newsockfd; /* Socket descriptors */
+	int sockfd, newsockfd;
 	int clilen;
 	struct sockaddr_in cli_addr, serv_addr;
 
 	int i;
-	char buf[100]; /* We will use this buffer for communication */
+	char buf[100];
 
 	printf("Server started\n");
-	// sockfd = my_socket(AF_INET, SOCK_MyTCP, 0);
+
 	if ((sockfd = my_socket(AF_INET, SOCK_MyTCP, 0)) < 0)
 	{
 		perror("Cannot create socket\n");
@@ -21,7 +21,7 @@ int main()
 	}
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
-	serv_addr.sin_port = htons(20001);
+	serv_addr.sin_port = htons(20000);
 	printf("Socket created in server with sockfd = %d\n", sockfd);
 	if (my_bind(sockfd, (struct sockaddr *)&serv_addr,
 				sizeof(serv_addr)) < 0)
@@ -46,14 +46,19 @@ int main()
 			exit(0);
 		}
 
-		// scan uptil linefeed
 		scanf(" %[^\n]s", buf);
 
 		printf("Sending %s to client of length %ld \n", buf, strlen(buf));
 		my_send(newsockfd, buf, strlen(buf) + 1, 0);
 		printf("Sent %s to client\n", buf);
-		my_recv(newsockfd, buf, 100, 0);
-		printf("Received %s from client\n", buf);
+		sleep(10);
+		print_tables();
+		for (int i = 0; i < 20; i++)
+		{
+			my_recv(newsockfd, buf, 100, 0);
+			printf("Received %s from client of len %ld\n", buf, strlen(buf));
+		}
+
 
 		my_close(newsockfd);
 	}

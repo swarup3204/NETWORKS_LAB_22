@@ -304,7 +304,7 @@ int my_recv(int sockfd, void *buf, size_t len, int flags)
 
 	sz = atoi(last_entry->msg_len);
 
-	mn = (len < sz) ? sz : len;
+	mn = (len < sz) ? len : sz;
 
 	for (i = 0; i < mn; i++)
 	{
@@ -320,9 +320,6 @@ int my_recv(int sockfd, void *buf, size_t len, int flags)
 
 int my_send(int sockfd, const void *buf, size_t len, int flags)
 {
-	int i, length;
-
-	table_entry *new_entry = (table_entry *)malloc(sizeof(table_entry));
 
 	if (len > MAX_MSG_LEN)
 	{
@@ -337,6 +334,10 @@ int my_send(int sockfd, const void *buf, size_t len, int flags)
 		fprintf(stderr, "%s\n", strerror(errno));
 		return -1;
 	}
+
+	int i, length;
+
+	table_entry *new_entry = (table_entry *)malloc(sizeof(table_entry));
 
 	for (i = 0; i < len; i++)
 		new_entry->msg[i] = *((char *)buf + i);
@@ -368,28 +369,28 @@ void print_tables()
 	printf("Send Message Table\n");
 	table_entry *temp = Send_Message_Table->head;
 
-	while (temp != Send_Message_Table->tail)
+	while (temp != Send_Message_Table->tail && temp != NULL)
 	{
-		printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+		printf("%s\n", temp->msg_len);
 
 		temp = temp->next;
 	}
-
-	printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+	if (temp != NULL)
+		printf("%s\n", temp->msg_len);
 
 	printf("Received Message Table\n");
-	
+
 	temp = Received_Message_Table->head;
 
-	while (temp != Received_Message_Table->tail)
+	while (temp != Received_Message_Table->tail && temp != NULL)
 	{
-		printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
+		printf("%s\n", temp->msg_len);
 
 		temp = temp->next;
 	}
 
-	printf("%s %s %s\n", temp->msg, temp->msg_len, ctime(&temp->timestamp));
-
+	if (temp != NULL)
+		printf("%s\n", temp->msg_len);
 }
 
 void uninitialise(Table **Tbl)
@@ -417,13 +418,11 @@ void uninitialise(Table **Tbl)
 	Tble->table_sz = 0;
 
 	free(Tble);
-
-	*Tbl = NULL;
 }
 int my_close(int sockfd)
 {
 
-	// sleep(5);
+	sleep(5);
 
 	if (accept_cnt == 0 && connect_flag == 0)
 	{

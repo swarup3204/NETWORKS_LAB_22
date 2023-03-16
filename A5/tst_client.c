@@ -9,7 +9,7 @@ int main()
 	struct sockaddr_in serv_addr;
 
 	int i;
-	char buf[100];
+	char buf[5000];
 	printf("Client started\n");
 
 	/* Opening a socket is exactly similar to the server process */
@@ -21,7 +21,7 @@ int main()
 	printf("Socket created in client with sockfd = %d\n", sockfd);
 	serv_addr.sin_family = AF_INET;
 	inet_aton("127.0.0.1", &serv_addr.sin_addr);
-	serv_addr.sin_port = htons(20001);
+	serv_addr.sin_port = htons(20000);
 
 	if ((my_connect(sockfd, (struct sockaddr *)&serv_addr,
 					sizeof(serv_addr))) < 0)
@@ -31,17 +31,19 @@ int main()
 	}
 	printf("Connected to server\n");
 
-	for (i = 0; i < 100; i++)
+	for (i = 0; i < 5000; i++)
 		buf[i] = '\0';
 
 	printf("Trying to receive from server\n");
-	my_recv(sockfd, buf, 100, 0);
+	my_recv(sockfd, buf, 5000, 0);
 	printf("%s\n", buf);
 
-	strcpy(buf, "Hello I am a rogue !");
-	my_send(sockfd, buf, strlen(buf) + 1, 0);
-
-	//int x = my_send(sockfd, buf, strlen(buf) + 1, MSG_DONTWAIT);
+	for (i = 0; i < 20; i++)
+	{
+		strcpy(buf, "Hello I am a rogue !");
+		my_send(sockfd, buf, strlen(buf) + 1, 0);
+		sleep(1);
+	}
 
 	my_close(sockfd);
 	return 0;

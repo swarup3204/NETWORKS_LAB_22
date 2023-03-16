@@ -1,10 +1,10 @@
 tst:tst_client tst_server
 
 tst_client: tst_client.c libmsocket.a
-	gcc-12 tst_client.c -L. -o tst_client -lmsocket -lpthread -I.
+	gcc tst_client.c -L. -o tst_client -lmsocket -lpthread -I. -g
 
 tst_server: tst_server.c libmsocket.a
-	gcc-12 tst_server.c -L. -o tst_server -lmsocket -lpthread -I.
+	gcc tst_server.c -L. -o tst_server -lmsocket -lpthread -I. -g
 
 clean:
 	rm tst_client tst_server

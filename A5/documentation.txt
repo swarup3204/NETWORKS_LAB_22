@@ -162,7 +162,7 @@ FUNCTIONS USED:
 
 		- Thread to handle send calls
 		- The param is a pointer to the socket descriptor, passed as a parameter to the thread on creation [ in my_accept() or my_connect() ]
-		- This function pops the message to send from the send table [ It first acquires the lock to the Send_Message_Table, then checks if the table is empty, if it is empty it waits on the table_empty_cond, else pops the message from the table, signals the table_full_cond and releases the lock to the Send_Message_Table ] and sends it to the client using multiple send calls if needed [ one send call send atmost 1000 bytes ] and max 6 send calls possible [ since a message is of max 5(4 bytes for length of message in ascii characters and one null character at end) + 1(space for separating from actual message) + 5000(actual message) = 5006 bytes ]
+		- This function pops the message to send from the send table [ It first acquires the lock to the Send_Message_Table, then checks if the table is empty, if it is empty it waits on the table_empty_cond, else pops the message from the table, signals the table_full_cond and releases the lock to the Send_Message_Table ] and sends it to the client using multiple send calls if needed [ one send call send atmost 1000 bytes ] and max 6 send calls possible [ since a message is of max(4 bytes for length of message in ascii characters and one null character at end) + 1(space for separating from actual message) + 5000(actual message) = 5006 bytes ]
 
 
 	10.void *recv_thread(void *param)
@@ -192,18 +192,78 @@ FUNCTIONS USED:
 
 	14.void initialise_table(Table **Tbl)
 
-		- 
-		-
-		-
+		- It allocates memory a the Table structure 
+		- It initialises the size of the table to 0	
+		- It initialises the head and tail of the table to NULL
+		- It initialises the mutex and condition variables of the table
+		- It then copies the table to the content of pointer to the table passed as a parameter and frees the memory allocated for the table
 
 	15.void uninitialise(Table **Tbl)
 
-		-
-		- 
-		-
+		- It first copies the content of the pointer to the table to a local variable
+		- It then frees all the table entries
+		- It then destorys the mutex and condition variables
+		- It sets table size to 0
+		- It then frees the memory allocated for the table.
 
 
 WORKFLOW:
 	(1) my_send():
 
+			Suppose program wants to send a string x.Suppose len(x) represents the number of characters to send.
+			The program writes my_send(sockfd,x,len(x),0) to send the string x.
+			my_send() first performs error checks,it checks if len(x) is greater than MAX_MSG_LEN,throws an error [ ENOMEM ] and returns -1,or if flags is anything other than 0,throws an error [ EINVAL ] and returns -1.
+			If no error,it allocates space for a table entry.
+			It then copies the message to be sent [ len(x) characters of it ] to table_entry->msg character array.
+			It then converts the length of the message to be sent to ascii characters and stores it in table_entry->msg_len character array. [ null terminated ]
+			It fills the timestamp field of the message in table_entry->timestamp.
+			It then tries to acquire the lock on the Send_Message_Table
+			If it is able to, it checks if the table is full,if it is full, it waits on the table_full_cond,else it pushes the table_entry [at the END of the Table ] into the table,signals the table_empty_cond and releases the lock on the Send_Message_Table.
+			It then returns the length of the message sent. [ len(x) itself ]                                                                                             
+			
+			
+			In send_thread():
+
+			It tries to acquire the lock on the Send_Message_Table
+			If it is able to, it checks if the table is empty,if it is empty, it waits on the table_empty_cond,else it pops the table_entry from the table [ from the START of the Table ],signals the table_full_cond and releases the lock on the Send_Message_Table.
+			It now constructs the message to send in appropriate format.
+			The format the message is sent is <Length of message in ascii characters [terminated with null]><space><message with length characters>
+			It then sends the message to the client using multiple send calls if needed [ one send call send atmost 1000 bytes ] and max 6 send calls possible [ since a message is of max (4 bytes for length of message in ascii characters and one null character at end) + 1(space for separating from actual message) + 5000(actual message) = 5006 bytes ]
+
+			It then waits on the next entry in the table to be filled by the my_send() call. [ if already field proceeds immediately after acquiring lock and sends it ]
+
+			This method ensures whichever message is to be sent first, is sent actually in a FIFO order in the send thread. [ as the pop and push functions are the implementations of the queue pop and push functions ]
+
+			[ The send thread is created in my_accept() or my_connect() function, and is cancelled in my_close() functi on ]
+
 	(2) my_recv():
+
+			Suppose program wants to receive a string in x.Suppose len(x) represents the number of characters to receive.
+			The program writes my_recv(sockfd,x,len(x),0) to receive the string in x.
+			my_recv() first performs error checks,if flags is anything other than 0,throws an error [ EINVAL ] and returns -1.
+			If no error,it allocates space for a table entry.
+			It then tries to acquire the lock on the Received_Message_Table
+			If it is able to, it checks if the table is empty,if it is empty, it waits on the table_empty_cond,else it pops the table_entry from the table [ from the START of the Table ],signals the table_full_cond and releases the lock on the Received_Message_Table.
+			It then copies the message received [ min(len(x),length of message in entry) characters of the message and rest filled with '\0' uptil len(x) characters filled ] to the character array x specified in the parameter.
+			It then returns the length of the message received. [ len(x) itself ]                                                                                             
+			
+			
+			In recv_thread():
+
+			It allocates memory for a table entry.
+			It then tries to receive the message from the other side using recv()
+			It makes multiple recv calls if needed [ one recv call recv atmost <RECV_BUF_SZ> bytes ].
+			It then parses the message received ,fills the entry->msg_len field until it finds a space [either in one recv call or until multiple recv calls]
+			One it has found the length [ found a space ],it sets a got_len flag to be true and then reads the required number of characters from the subsequent recv calls and pushes into the entry->msg character array.
+			It fills the timestamp field of the message in table_entry->timestamp.
+			It then tries to acquire the lock on the Received_Message_Table
+			If it is able to, it checks if the table is full,if it is full, it waits on the table_full_cond,else it pushes the table_entry [at the END of the Table ] into the table,signals the table_empty_cond and releases the lock on the Received_Message_Table.
+
+			It then tries to recv the next message [ or gets blocked if nothing is to be received then ]
+
+			This method ensures whichever message is to be received first, is received actually in a FIFO order in the receive thread. [ as the pop and push functions are the implementations of the queue pop and push functions ]
+
+			[ The receive thread is created in my_accept() or my_connect() function, and is cancelled in my_close() function ]
+
+
+---------------------------------------------------------------END------------------------------------------------------------------------------------------------------------------------------
