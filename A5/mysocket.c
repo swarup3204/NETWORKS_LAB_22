@@ -100,7 +100,8 @@ void *recv_thread(void *param)
 					entry->msg_len[i] = recv_buf[i];
 				}
 
-				if(got_len == 0){
+				if (got_len == 0)
+				{
 					continue;
 				}
 				len = atoi(entry->msg_len);
@@ -274,7 +275,7 @@ int my_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
 
 	create_threads(sockfd);
 
-	connect_cnt++;
+	connect_flag = 1;
 	return status;
 }
 int my_recv(int sockfd, void *buf, size_t len, int flags)

@@ -1,16 +1,16 @@
 											Networks Lab Assignment 5
 											Team: Rounak Saha  (20CS30043)
 												  Swarup Padhi (20CS30062)
-										   ================================
+										   =================================
 
 MACROS:
 	1.		Name:	      MAX_MSG_LEN
 			Definition:	  #define MAX_MSG_LEN 5000
-			Description:  Maximum length of the message that can be sent.
+			Description:  Maximum length in bytes of the message that can be sent.
 	
 	2.		Name:	      MAX_MSG_DIGITS
 			Definition:	  #define MAX_MSG_DIGITS 4
-			Description:  Maximum number of digits in the length of the message.
+			Description:  Maximum number of digits in the length of the message. [ 4 digits for max 5000 bytes and 1 byte for null character]
 	
 	3.      Name:         SOCK_MyTCP
 			Definition:   #define SOCK_MyTCP 12
@@ -90,49 +90,83 @@ DATA STRUCTURES USED:
 			Description:  The Table themselves have been implemented as a linked list with pointers to the head and tail of the linked list. The operations allowed on this linked list are push from back and pop from front [ same as in a Queue ]. This is to enable FIFO order of delivery of messages to the application. The table_lck is a mutex lock to ensure that only one thread can access that table at a time. The table_full_cond and table_empty_cond are condition variables to wait on when the table is full and when the table is empty respectively.We used pthread_cond_wait to wait efficiently instead of sleeping [ for which we need these conditional variables ]. The table_sz is the current size of the table.
 
 FUNCTIONS USED:
+
 	1.int my_socket (int sockfd, int domain, int type, int protocol):
-		- This function creates a socket of the specified type and returns the socket descriptor.
+
 		- The socket descriptor is stored in the sockfd variable.
 		- The domain, type and protocol are the same as the ones used in the socket() system call.
+		- This function creates a socket of the specified type and returns the socket descriptor.
 		- The only allowed type is SOCK_MyTCP, any other type will result in a return value of -1 [failure] and errno set to EINVAL
 		- The function returns 0 on success and -1 on failure.
+
 	2.int my_bind (int sockfd, const struct sockaddr *addr, socklen_t addrlen):
-		- This function binds the socket to the specified address.
+
 		- The sockfd is the socket descriptor returned by the my_socket() function.
 		- The addr is the address to which the socket is to be bound.
 		- The addrlen is the length of the address.
+		- This function binds the socket to the specified address.
 		- The function returns 0 on success and -1 on failure.
+
 	3.int my_listen (int sockfd, int backlog):
-		- This function puts the socket in the listening state.
+
 		- The sockfd is the socket descriptor returned by the my_socket() function.
 		- The backlog is the maximum number of pending connections that can be queued.
+		- This function puts the socket in the listening state.
 		- The function returns 0 on success and -1 on failure.
+
 	4.int my_accept (int sockfd, struct sockaddr *addr, socklen_t *addrlen):
-		- This function accepts a connection on the socket.
+
 		- The sockfd is the socket descriptor returned by the my_socket() function.
 		- The addr is the address of the connecting client.
 		- The addrlen is the length of the address.
+		- This function accepts a connection on the socket.
 		- If failure function returns immediately with a return value of -1.
 		- If success function initialises the Send_Message_Table and the Received_Message_Table, allocates memory dynamically for send_buf and recv_buf character pointers, creates the threads [ passing the newsockfd as the parameter ], increases the accept_cnt by 1 and returns a new socket descriptor on which the actual connection is made.
+
 	5.int my_connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
-		- This function connects the socket to the specified address.
+
 		- The sockfd is the socket descriptor returned by the my_socket() function.
 		- The addr is the address to which the socket is to be connected.
 		- The addrlen is the length of the address.
+		- This function connects the socket to the specified address.
 		- If failure function returns immediately with a return value of -1.
 		- If success function initialises the Send_Message_Table and the Received_Message_Table, allocates memory dynamically for send_buf and recv_buf character pointers, creates the threads [ passing the sockfd as the parameter ], sets the connect_flag to 1 and returns 0.
+
 	6.int my_send(int sockfd, const void *buf, size_t len, int flags)
-		- This function sends the message to the other end.
-		- The sockfd is the socket descriptor returned by the my_socket() function.
+
+		- The sockfd is the socket descriptor returned by the my_socket()/my_accept function.
 		- The buf is the buffer containing the message to be sent.
 		- The len is the length of the message.
-		- The flags are the same as the ones used in the send() system call.
-		- If failure function returns immediately with a return value of -1.
-		- If success function pushes the message into the Send_Message_Table and returns the number of bytes sent.
-	7.my_recv
-	8.my_close
-	9.send_thread
-	10.recv_thread
+		- It first checks if flag is anything other than 0 or message size to send is greater than max message length and sets errorno accordingly and prints to stderr,returning -1 [ failure ].
+		- This function pushes the message to send into the send table
+		- If success function pushes the message into the Send_Message_Table and returns the number of bytes of the message [ returns len itself ].
+		- Can return success even if send() fails later [ ignored such issues ].
+
+	7.int my_recv(int sockfd, void *buf, size_t len, int flags)
+
+		- The sockfd is the socket descriptor returned by the my_socket()/my_accept() function.
+		- The buf is the buffer to which the message is to be copied.
+		- The len is the length of the message.
+		- It first checks if flag is anything other than 0 and sets errorno accordingly and prints to stderr,returning -1 [ failure ].
+		- This function pops the message to receive from the receive table
+		- If success function pops the message from the Received_Message_Table and returns the number of bytes that had to be read [ returns len itself ].
+
+	8.int my_close (int sockfd)
+
+		- The sockfd is the socket descriptor returned by the my_accept/my_socket() function.
+		- This function checks if accept_cnt is 0 or connect_flag not set,and immediately closes socket without de-allocation of any data structures, since this must be the last close(sockfd) call on a server socket [ not the newsockfd returned by accept() ,and since our logic initialises tables and creates thread only on accept call, it is destroyed already by the corresponding my_close (newsockfd) call ]
+		- If accept_cnt is not 0 or connect_flag is set, it cancels the thread synchronously using 'pthread_cancel()' [ uses deferred cancellation, and recv() and send() are default cancellation points for the send() and recv() calls, so an ongoing send()/recv() call will be allowed but subsequent send()/recv() call will lead to cancellation of thread. So,it doesn't guarantee 100% reliability, sleep(<seconds>) solves the issue but my_close() doesn't return immediately ], de-allocates the memory allocated for the send_buf and recv_buf character pointers, uninitialises the Send_Message_Table and the Received_Message_Table, and closes the socket.
+		- The function returns 0 on success and -1 on failure
+
+	9.void *send_thread(void *param)
+
+		- Thread to handle send calls
+		- The param is a pointer to the socket descriptor, passed as a parameter to the thread on creation [ in my_accept() or my_connect() ]
+		- This function pops the message to send from the send table [ if any message available else wait ] and sends it to the client using multiple send calls if needed [ one send call send atmost 1000 bytes ] and max 6 send calls possible [ since a message is of max 5(4 bytes for length of message in ascii characters and one null character at end) + 1(space for separating from actual message) + 5000(actual message) = 5006 bytes ]
+		- 
+
+
+	10.void *recv_thread(void *param)
 	11.create_threads
 	12.queue_push
 	13.queue_pop
