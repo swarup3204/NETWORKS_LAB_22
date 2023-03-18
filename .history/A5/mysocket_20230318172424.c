@@ -440,9 +440,7 @@ int my_close(int sockfd)
 	pthread_cancel(tid_R);
 	pthread_cancel(tid_S);
 
-	pthread_join(tid_R, NULL);
-	pthread_join(tid_S, NULL);
-	
+	pthread_join()
 	free(send_buf);
 	free(recv_buf);
 
