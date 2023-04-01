@@ -25,6 +25,7 @@
 #define RECV_TIMEOUT 5
 // timeout for recvfrom() in seconds
 #define ICMP_PKT_SIZE 128
+#define SLEEP_RATE 100
 // a global variable to store the destination ip address
 char *dest_ip;
 // a global variable to store the socket file descriptor
@@ -66,7 +67,7 @@ int lookup_dns_and_assign(char *addr_host)
 		// No ip found for hostname
 		return FAILURE;
 	}
-	
+
 	dest_ip = (char *)malloc(sizeof(host_entity->h_addr_list[0]));
 	strcpy(dest_ip, inet_ntoa(*(struct in_addr *)host_entity->h_addr_list[0]));
 	// filling up dest_addr
@@ -141,6 +142,25 @@ void establish_link(int ttl)
 
 	// first send the packet with nothing in icmp
 	bzero(&packet, sizeof(packet));
+
+	// fill the packet with '0'
+	for (int i = 0; i < sizeof(packet.message) - 1; i++)
+	{
+		packet.message[i] = '0';
+	}
+	packet.header.checksum = checksum(&packet, sizeof(packet));
+	// printf("Calculated checksum is %d\n", packet.header.checksum);
+	// packet.header.type = ICMP_ECHO;
+	// packet.header.un.echo.id = getpid();
+
+	// for (int i = 0; i < sizeof(packet.message) - 1; i++)
+	// {
+	// 	packet.message[i] = '0';
+	// }
+
+	// packet.header.un.echo.sequence = 1;
+	// packet.header.checksum = checksum(&packet, sizeof(packet));
+
 	flag = 0;
 	for (int i = 0; i < 5; i++)
 	{ // try 5 times to get icmp time limit exceeded
@@ -161,7 +181,9 @@ void establish_link(int ttl)
 			flag = 1;
 			break;
 		}
+		usleep(SLEEP_RATE);
 	}
+
 	if (flag == 1)
 	{
 		// check if packet received is icmp time limit exceeded
@@ -177,6 +199,7 @@ void establish_link(int ttl)
 			for (int i = 0; i < MAX_FIND_HOP_TRIES && success_replies < 5; ++i)
 			{
 				// send echo request
+
 				bzero(&packet, sizeof(packet));
 				packet.header.type = ICMP_ECHO;
 				packet.header.un.echo.id = getpid();
@@ -210,10 +233,18 @@ void establish_link(int ttl)
 						success_replies++;
 					}
 				}
+
+				usleep(SLEEP_RATE);
 			}
 
 			// printf("Next hop ip: %s\n", next_hop_ip);
 			// printf("Estimating latecny of link\n");
+		}
+		else
+		{
+			printf("Did not receive icmp time exceeded, ");
+			// print type of icmp packet received
+			printf("Received icmp packet type: %d\n", packet.header.type);
 		}
 	}
 	else
