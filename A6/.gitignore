@@ -1,0 +1,4 @@
+/.vscode/
+pingnetinfo
+/*.o
+ping_server.c
