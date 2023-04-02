@@ -1,53 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <strings.h>
-#include <unistd.h>
-#include <netinet/ip_icmp.h>
-#include <netinet/tcp.h>
-#include <netinet/ip.h>
-#include <netdb.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#define ECHO_REQUEST 1
-#define ECHO_REPLY 2
-#define TIME_EXCEEDED 3
-#define SUCCESS 0
-#define FAILURE -1
-// max packets to send to confirm a next hop in a route
-#define MAX_FIND_HOP_TRIES 100
-#define PORT_NO 0
-// port no of servers to connect to
-#define RECV_TIMEOUT 10
-// timeout for recvfrom() in seconds
-#define ICMP_PKT_SIZE 64
-#define IP_PKT_SIZE 128
-#define SLEEP_RATE 100
-// a global variable to store the destination ip address
-char *dest_ip;
-// a global variable to send a non icmp udp packet,so that ttl = 0
-int udp_sockfd;
-// a global variable to store the socket file descriptor
-int sockfd;
-// a global variable to store the destination address in sockaddr_in format
-struct sockaddr_in *dest_addr_con;
+#include "pingnetinfo.h"
 
-struct icmp_pkt
-{
-	struct icmphdr header;
-	char message[ICMP_PKT_SIZE - sizeof(struct icmphdr)];
-};
-
-struct ip_pkt
-{
-	struct iphdr header;
-	struct icmp_pkt icmp;
-	char message[IP_PKT_SIZE - sizeof(struct iphdr) - sizeof(struct icmphdr)];
-};
 int parse_icmp_packet(struct icmphdr *icmp)
 {
 	// there are 3 types we care about:
@@ -55,6 +7,7 @@ int parse_icmp_packet(struct icmphdr *icmp)
 	// ICMP_TIME_EXCEEDED
 	// ICMP_ECHOREQUEST
 	// check the type and return the appropriate value
+
 	switch (icmp->type)
 	{
 	case ICMP_ECHOREPLY:
@@ -66,45 +19,6 @@ int parse_icmp_packet(struct icmphdr *icmp)
 	default:
 		return FAILURE;
 	}
-}
-int lookup_dns_and_assign(char *addr_host)
-{
-	printf("Resolving DNS\n");
-	struct hostent *host_entity;
-	if ((host_entity = gethostbyname(addr_host)) == NULL)
-	{
-		// No ip found for hostname
-		return FAILURE;
-	}
-
-	dest_ip = (char *)malloc(sizeof(host_entity->h_addr_list[0]));
-	strcpy(dest_ip, inet_ntoa(*(struct in_addr *)host_entity->h_addr_list[0]));
-	// filling up dest_addr
-	// memset(dest_addr_con, 0, sizeof(*dest_addr_con));
-	dest_addr_con->sin_family = host_entity->h_addrtype;
-	dest_addr_con->sin_port = htons(PORT_NO);
-	dest_addr_con->sin_addr.s_addr = *(unsigned int *)host_entity->h_addr_list[0];
-
-	// printf("%s resolved to %s\n", addr_host, dest_ip);
-	return SUCCESS;
-}
-char *reverse_dns_lookup()
-{
-}
-void compute_latency()
-{
-}
-void print_tcp_header(struct tcphdr *header)
-{
-}
-void print_udp_header()
-{
-}
-void print_icmp_header()
-{
-}
-void print_ip_header()
-{
 }
 unsigned short checksum(void *b, int len)
 {
@@ -120,6 +34,45 @@ unsigned short checksum(void *b, int len)
 	sum += (sum >> 16);
 	result = ~sum;
 	return result;
+}
+int lookup_dns_and_assign(char *addr_host)
+{
+	printf("Resolving DNS\n");
+	struct hostent *host_entity;
+	if ((host_entity = gethostbyname(addr_host)) == NULL)
+	{
+		// No ip found for hostname
+		return FAILURE;
+	}
+
+	dest_ip = (char *)malloc(sizeof(host_entity->h_addr_list[0]));
+	strcpy(dest_ip, inet_ntoa(*(struct in_addr *)host_entity->h_addr_list[0]));
+
+	dest_addr_con->sin_family = host_entity->h_addrtype;
+	dest_addr_con->sin_port = htons(PORT_NO);
+	dest_addr_con->sin_addr.s_addr = *(unsigned int *)host_entity->h_addr_list[0];
+
+	return SUCCESS;
+}
+char *reverse_dns_lookup()
+{
+}
+void estimate_latency(int hop)
+{
+	// estimatate latency betweeen two adjacent ip addressess in a route,where hop is the number of hops uptil now
+	// send date packets of different sizes and calculate the time difference and then calculate the latency and bandwidth
+}
+void print_tcp_header(struct tcphdr *header)
+{
+}
+void print_udp_header()
+{
+}
+void print_icmp_header()
+{
+}
+void print_ip_header()
+{
 }
 void establish_link(int ttl)
 {
@@ -144,40 +97,42 @@ void establish_link(int ttl)
 		exit(EXIT_FAILURE);
 	}
 	// set a timeout - this allows us to bypass the use of poll() or select()
-	// if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout)) < 0)
-	// {
-	// 	printf("Error: Could not set socket options!\n");
-	// 	exit(EXIT_FAILURE);
-	// }
+	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char *)&timeout, sizeof(timeout)) < 0)
+	{
+		printf("Error: Could not set socket options!\n");
+		exit(EXIT_FAILURE);
+	}
 
 	// printf("Calculated checksum is %d\n", send_packet.header.checksum);
 
 	flag = 0;
 	for (int i = 0; i < 5; i++)
-	{ // try 5 times to get icmp time limit exceeded
-		// first send the send_packet with nothing in icmp
+	{
+		// try 5 times to get icmp time limit exceeded sending echo request packets with apt ttl
 		bzero(&send_packet, sizeof(send_packet));
+		// initialize the send_packet with '\0'
 
-		// fill the send_packet with '0'
 		memset(&send_packet, 0, sizeof(send_packet));
 
 		// create icmp echo request,it may be dropped,but it will return another icmp send_packet
 		send_packet.header.type = ICMP_ECHO;
 		send_packet.header.un.echo.id = getpid();
 		send_packet.header.un.echo.sequence = 0;
+		
 
 		for (int i = 0; i < sizeof(send_packet.message) - 1; i++)
 		{
-			send_packet.message[i] = i + '0';
+			send_packet.message[i] = i + '0'; // random data
 		}
 
 		send_packet.header.checksum = checksum(&send_packet, sizeof(send_packet));
 
 		if (sendto(sockfd, &send_packet, sizeof(send_packet), 0, (struct sockaddr *)dest_addr_con, sizeof(*dest_addr_con)) < 0)
 		{
-			printf("Error: Could not send ttl=1 packet!\n");
+			printf("Error: Could not send ttl=%d packet!\n", ttl);
 			continue;
 		}
+
 		// wait for an icmp send_packet to arrive with time limit exceeded
 		addr_len = sizeof(struct sockaddr_in);
 		if (recvfrom(sockfd, &recv_packet, sizeof(recv_packet), 0, (struct sockaddr *)&recv_addr, &addr_len) < 0)
@@ -187,7 +142,7 @@ void establish_link(int ttl)
 		}
 		else
 		{
-			printf("Received a packet on sending ttl = %d \n", ttl);
+			printf("Received a packet on sending ttl = %d and packet type %d\n", ttl, recv_packet.icmp.header.type);
 			flag = 1; // received a packet
 			break;
 		}
@@ -211,6 +166,11 @@ void establish_link(int ttl)
 				printf("Error: Could not set socket options!\n");
 				exit(EXIT_FAILURE);
 			}
+			struct sockaddr_in next_hop_addr;
+			next_hop_addr.sin_family = AF_INET;
+			next_hop_addr.sin_port = htons(PORT_NO);
+			next_hop_addr.sin_addr.s_addr = inet_addr(next_hop_ip);
+
 			int success_replies = 0;
 			for (int i = 1; i <= MAX_FIND_HOP_TRIES && success_replies < 5; ++i)
 			{
@@ -221,16 +181,16 @@ void establish_link(int ttl)
 				send_packet.header.un.echo.id = getpid();
 				send_packet.header.un.echo.sequence = i;
 				send_packet.header.checksum = checksum(&send_packet, sizeof(send_packet));
-				if (sendto(sockfd, &send_packet, sizeof(send_packet), 0, (struct sockaddr *)dest_addr_con, sizeof(*dest_addr_con)) < 0)
+				if (sendto(sockfd, &send_packet, sizeof(send_packet), 0, (struct sockaddr *)&next_hop_addr, sizeof(next_hop_addr)) < 0)
 				{
-					printf("Error: Could not send packet!\n");
+					printf("Error: Could not send echo request!\n");
 					continue;
 				}
 				// wait for an icmp packet to arrive with echo request
 				addr_len = sizeof(struct sockaddr_in);
 				if (recvfrom(sockfd, &recv_packet, sizeof(recv_packet), 0, (struct sockaddr *)&recv_addr, &addr_len) < 0)
 				{
-					printf("Error: Could not receive packet!\n");
+					printf("Error: Could not receive echo reply!\n");
 					continue;
 				}
 				//! store packets in an array
@@ -243,7 +203,7 @@ void establish_link(int ttl)
 				//! at present naively assuming it comes as soon as u send
 				else
 				{
-					printf("Packet type received for echo request %d\n", parse_icmp_packet(&recv_packet.icmp.header));
+					printf("Packet type received for echo request: %d\n", parse_icmp_packet(&recv_packet.icmp.header));
 					// check if packet received is icmp echo reply
 					if (parse_icmp_packet(&recv_packet.icmp.header) == ECHO_REPLY)
 					{
@@ -262,7 +222,7 @@ void establish_link(int ttl)
 			}
 			else
 			{
-				printf("Could not receive 5 consecutive echo replies, Received icmp packet type, Cannot establish next hop\n");
+				printf("Could not receive 5 consecutive echo replies, Cannot establish next hop\n");
 			}
 		}
 		else
@@ -280,6 +240,10 @@ void establish_link(int ttl)
 				printf("Cannot establish next hop\n");
 			}
 		}
+	}
+	else
+	{
+		printf("Could not receive any icmp packet, Cannot establish next hop\n");
 	}
 }
 // void find_latency()
@@ -318,6 +282,9 @@ int main(int argc, char *argv[])
 
 	// debug statement
 	printf("The ip address of destination is %s\n", dest_ip);
+
+	num_probes = atoi(argv[2]);
+	time_diff = atoi(argv[3]);
 
 	// create a socket
 	sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
