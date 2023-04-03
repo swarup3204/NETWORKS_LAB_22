@@ -13,7 +13,10 @@ int parse_icmp_packet(struct icmphdr *icmp)
 	case ICMP_ECHOREPLY:
 		return ECHO_REPLY;
 	case ICMP_TIME_EXCEEDED:
-		return TIME_EXCEEDED;
+		if (icmp->code == ICMP_EXC_TTL)
+			return TIME_EXCEEDED;
+		else
+			return FAILURE;
 	case ICMP_ECHO:
 		return ECHO_REQUEST;
 	default:
@@ -57,10 +60,99 @@ int lookup_dns_and_assign(char *addr_host)
 char *reverse_dns_lookup()
 {
 }
-void estimate_latency(int hop)
+double send_probes(char *next_hop_ip, size_t msg_len)
 {
+	struct sockaddr_in send_addr, recv_addr;
+	socklen_t recv_addr_len = sizeof(recv_addr);
+	send_addr.sin_family = AF_INET;
+	send_addr.sin_addr.s_addr = inet_addr(next_hop_ip);
+	send_addr.sin_port = htons(PORT_NO);
+	// measure time for 64 byte packet,start timer at send to and stop at recvfrom
+	struct timeval start, end;
+	// set ttl to 100
+	int ttl = 100;
+	// send 64 byte packet
+	struct icmp_pkt send_packet;
+	// ip packet to receive response
+	struct ip_pkt recv_packet;
+
+	long int time_diff_arr[num_probes];
+	// calculate average time
+	long int sum = 0;
+
+	if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
+	{
+		printf("Error: Could not set TTL!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	for (int i = 0; i < num_probes; ++i)
+	{
+		bzero(&send_packet, sizeof(send_packet));
+		// initialize the send_packet with '\0'
+
+		memset(&send_packet, 0, sizeof(send_packet));
+		send_packet.header.type = ICMP_ECHO;
+		send_packet.header.un.echo.id = getpid();
+		send_packet.header.un.echo.sequence = i;
+		// fill the message with random data
+		for (size_t j = 0; j < msg_len; j++)
+		{
+			send_packet.message[j] = '0'; // random data
+		}
+		send_packet.header.checksum = checksum(&send_packet, sizeof(struct icmphdr) + msg_len);
+		// start timer
+		gettimeofday(&start, NULL);
+		if (sendto(sockfd, &send_packet, sizeof(struct icmphdr) + msg_len, 0, (struct sockaddr *)&send_addr, sizeof(send_addr)) < 0)
+		{
+			printf("Error: Could not send packet of size %ld bytes!\n", msg_len);
+			exit(EXIT_FAILURE);
+		}
+		// wait for reply
+		if (recvfrom(sockfd, &recv_packet, sizeof(recv_packet), 0, (struct sockaddr *)&recv_addr, &recv_addr_len) < 0)
+		{
+			printf("Error: Could not receive packet for %ld bytes!\n", msg_len);
+			exit(EXIT_FAILURE);
+		}
+		// stop timer
+		gettimeofday(&end, NULL);
+		printf("Received packet of type %d from %s with seq no %d and size %ld\n", recv_packet.icmp.header.type, inet_ntoa(recv_addr.sin_addr), recv_packet.icmp.header.un.echo.sequence, sizeof(recv_packet));
+		// calculate time difference
+		double time_taken = (end.tv_sec - start.tv_sec) * 1e6;
+		time_taken = (time_taken + (end.tv_usec - start.tv_usec));
+		time_diff_arr[i] = time_taken;
+		sleep(time_diff);
+	}
+	for (int i = 0; i < num_probes; ++i)
+	{
+		sum += time_diff_arr[i];
+	}
+
+	return (sum * 1.0) / num_probes;
+}
+void estimate_latency(char *next_hop_ip)
+{
+	double avg_rtt_64, avg_rtt_80, rate, bandwidth, latency;
 	// estimatate latency betweeen two adjacent ip addressess in a route,where hop is the number of hops uptil now
 	// send date packets of different sizes and calculate the time difference and then calculate the latency and bandwidth
+
+	avg_rtt_64 = send_probes(next_hop_ip, 64);
+	printf("Average latency for 64 byte packet is %lf us\n", avg_rtt_64);
+	avg_rtt_80 = send_probes(next_hop_ip, 80);
+	printf("Average latency for 80 byte packet is %lf us\n", avg_rtt_80);
+
+	// calculate bandwidth
+	bandwidth = (((sizeof(struct icmphdr) + 80.0) / avg_rtt_80) + (sizeof(struct icmphdr) + 64.0) / avg_rtt_64) / 2.0;
+
+	// difference in latency is rate of transmission
+	rate = 16.0 / (avg_rtt_80 - avg_rtt_64);
+
+	latency = ((avg_rtt_64 - ((sizeof(struct icmphdr) + 64.0)) / rate) + (avg_rtt_80 - ((sizeof(struct icmphdr) + 80.0)) / rate)) / 2.0;
+
+	printf("IP address %s\n", next_hop_ip);
+	printf("Latency: %lf us\n", latency);
+	printf("Bandwidth: %lf Mbps\n", bandwidth);
+	printf("Rate: %lf Mbps\n", rate);
 }
 void print_tcp_header(struct tcphdr *header)
 {
@@ -74,7 +166,7 @@ void print_icmp_header()
 void print_ip_header()
 {
 }
-void establish_link(int ttl)
+int establish_link(int ttl)
 {
 	struct timeval timeout;
 	timeout.tv_sec = RECV_TIMEOUT;
@@ -117,12 +209,11 @@ void establish_link(int ttl)
 		// create icmp echo request,it may be dropped,but it will return another icmp send_packet
 		send_packet.header.type = ICMP_ECHO;
 		send_packet.header.un.echo.id = getpid();
-		send_packet.header.un.echo.sequence = 0;
-		
+		send_packet.header.un.echo.sequence = i;
 
-		for (int i = 0; i < sizeof(send_packet.message) - 1; i++)
+		for (int j = 0; j < sizeof(send_packet.message); j++)
 		{
-			send_packet.message[i] = i + '0'; // random data
+			send_packet.message[j] = '0'; // random data
 		}
 
 		send_packet.header.checksum = checksum(&send_packet, sizeof(send_packet));
@@ -219,6 +310,7 @@ void establish_link(int ttl)
 			{
 				printf("Next hop ip: %s\n", next_hop_ip);
 				printf("Estimating latency of link\n");
+				estimate_latency(next_hop_ip);
 			}
 			else
 			{
@@ -234,6 +326,8 @@ void establish_link(int ttl)
 			{
 				printf("Next hop ip: %s\n", inet_ntoa(dest_addr_con->sin_addr));
 				printf("Estimating latency of link\n");
+				estimate_latency(next_hop_ip);
+				return 1;
 			}
 			else
 			{
@@ -245,6 +339,7 @@ void establish_link(int ttl)
 	{
 		printf("Could not receive any icmp packet, Cannot establish next hop\n");
 	}
+	return 0;
 }
 // void find_latency()
 // {
@@ -302,11 +397,17 @@ int main(int argc, char *argv[])
 	// 	exit(EXIT_FAILURE);
 	// }
 	int ttl = 1;
-	while (1)
+	while (ttl < MAX_HOPS)
 	{
 		// establish links /next hops,also find latency of link
 		// find_latency();
-		establish_link(ttl);
+		if (establish_link(ttl) == 1)
+		{
+			// if next hop is the same as the destination, break
+			printf("Reached destination!\n");
+			break;
+		}
 		ttl++;
 	}
+	exit(EXIT_SUCCESS);
 }
