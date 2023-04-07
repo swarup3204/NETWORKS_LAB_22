@@ -62,92 +62,148 @@ char *reverse_dns_lookup()
 }
 double send_probes(char *next_hop_ip, size_t msg_len)
 {
-	struct sockaddr_in send_addr, recv_addr;
-	socklen_t recv_addr_len = sizeof(recv_addr);
-	send_addr.sin_family = AF_INET;
-	send_addr.sin_addr.s_addr = inet_addr(next_hop_ip);
-	send_addr.sin_port = htons(PORT_NO);
-	// measure time for 64 byte packet,start timer at send to and stop at recvfrom
-	struct timeval start, end;
-	// set ttl to 100
-	int ttl = 100;
-	// send 64 byte packet
-	struct icmp_pkt send_packet;
-	// ip packet to receive response
-	struct ip_pkt recv_packet;
+	/* sends num_probe pings of size msg_len to next_hop_ip and returns minimum rtt */
+	
+	struct sockaddr_in addr_con;
+	addr_con.sin_family = AF_INET;
+	addr_con.sin_port = htons(PORT_NO);
+	addr_con.sin_addr.s_addr = inet_addr(next_hop_ip);
 
-	long int time_diff_arr[num_probes];
-	// calculate average time
-	long int sum = 0;
-
-	if (setsockopt(sockfd, IPPROTO_IP, IP_TTL, &ttl, sizeof(ttl)) < 0)
-	{
-		printf("Error: Could not set TTL!\n");
-		exit(EXIT_FAILURE);
-	}
+	char reply_dump[IP_PKT_SIZE];
 
 	for (int i = 0; i < num_probes; ++i)
 	{
-		bzero(&send_packet, sizeof(send_packet));
-		// initialize the send_packet with '\0'
+		struct icmp_pkt probe;
+		memset(&probe, 0, sizeof(probe));
+		probe.header.type = ICMP_ECHO;
+		probe.header.un.echo.id = getpid();
 
-		memset(&send_packet, 0, sizeof(send_packet));
-		send_packet.header.type = ICMP_ECHO;
-		send_packet.header.un.echo.id = getpid();
-		send_packet.header.un.echo.sequence = i;
-		// fill the message with random data
-		for (size_t j = 0; j < msg_len; j++)
+		struct timeval currtime;
+		gettimeofday(&currtime, NULL);
+		
+		memcopy(&probe.message, &currtime, sizeof(currtime)); 
+		/* hoping memcopy is safe :( */
+
+		size_t sizeof_packet = &probe.message[msg_len] - &probe;
+		/* hoping msg_len would be big enough to contain the timestamp */
+
+		probe.header.checksum = checksum(&probe, sizeof_packet);
+
+		if (sendto(sockfd, &probe, sizeof_packet, 0, (struct sockaddr *)&addr_con, sizeof(addr_con)) < 0)
 		{
-			send_packet.message[j] = '0'; // random data
-		}
-		send_packet.header.checksum = checksum(&send_packet, sizeof(struct icmphdr) + msg_len);
-		// start timer
-		gettimeofday(&start, NULL);
-		if (sendto(sockfd, &send_packet, sizeof(struct icmphdr) + msg_len, 0, (struct sockaddr *)&send_addr, sizeof(send_addr)) < 0)
-		{
-			printf("Error: Could not send packet of size %ld bytes!\n", msg_len);
+			printf("Error: Could not send packet!\n");
 			exit(EXIT_FAILURE);
 		}
-		// wait for reply
-		if (recvfrom(sockfd, &recv_packet, sizeof(recv_packet), 0, (struct sockaddr *)&recv_addr, &recv_addr_len) < 0)
-		{
-			printf("Error: Could not receive packet for %ld bytes!\n", msg_len);
-			exit(EXIT_FAILURE);
-		}
-		// stop timer
-		gettimeofday(&end, NULL);
-		printf("Received packet of type %d from %s with seq no %d and size %ld\n", recv_packet.icmp.header.type, inet_ntoa(recv_addr.sin_addr), recv_packet.icmp.header.un.echo.sequence, sizeof(recv_packet));
-		// calculate time difference
-		double time_taken = (end.tv_sec - start.tv_sec) * 1e6;
-		time_taken = (time_taken + (end.tv_usec - start.tv_usec));
-		time_diff_arr[i] = time_taken;
+
 		sleep(time_diff);
-	}
-	for (int i = 0; i < num_probes; ++i)
-	{
-		sum += time_diff_arr[i];
+		
 	}
 
-	return (sum * 1.0) / num_probes;
+	/* now we have sent all the probes, now we need to receive the replies */
+	int success_cnt = 0;
+	int min_rtt = INT_MAX;
+
+	for (int i = 0; i < num_probes; ++i)
+	{
+		struct sockaddr_in recv_addr;
+		socklen_t addr_len = sizeof(recv_addr);
+
+		struct pollfd fdset = {sockfd, POLLIN, 0};
+
+		int ret = poll(&fdset, 1, 2000);
+
+		if (ret < 0)
+		{
+			perror("poll");
+			exit(EXIT_FAILURE);
+		}
+
+		else if (ret == 0)
+		{
+			/* probe timed out */
+			return -1;
+		}
+
+		else
+		{
+			if (recvfrom(sockfd, reply_dump, IP_PKT_SIZE, 0, (struct sockaddr *)&recv_addr, &addr_len) < 0)
+			{
+				printf("Error: Could not receive packet!\n");
+				exit(EXIT_FAILURE);
+			}
+
+			/* TODO: check if the IP header protocol is ICMP, if TCP or UDP print the same */
+
+			struct iphdr *hdr = (struct iphdr*)reply_dump;
+			if (hdr->protocol == IPPROTO_TCP)
+			{
+				printf("received TCP packet\n");
+				continue; // or break??
+			}
+			else if (hdr->protocol == IPPROTO_UDP)
+			{
+				printf("received UDP packet\n");
+				continue; // or break??
+			}
+			else if (hdr->protocol == IPPROTO_ICMP)
+			{
+				struct icmp_pkt *icmp = (struct icmp_pkt *)(reply_dump + sizeof(struct iphdr));
+
+				if (parse_icmp_packet(icmp) == ECHO_REPLY)
+				{
+					success_cnt++; // where will the success_cnt be used though??
+					struct timeval currtime;
+					gettimeofday(&currtime, NULL);
+
+					struct timeval sent_time = *(struct timeval *)icmp->message;
+					double rtt = (currtime.tv_sec - sent_time.tv_sec) * 1000000 + (currtime.tv_usec - sent_time.tv_usec);
+					
+					if (rtt < min_rtt)
+						min_rtt = rtt;
+				}
+			}
+			else
+			{
+				printf("unknown protocol\n");
+				continue; // or break??
+			}
+			
+		}
+
+	}
+
+	return min_rtt;
+
 }
-void estimate_latency(char *next_hop_ip)
+void estimate_latency(char *next_hop_ip, int hop_len)
 {
 	double avg_rtt_64, avg_rtt_80, rate, bandwidth, latency;
 	// estimatate latency betweeen two adjacent ip addressess in a route,where hop is the number of hops uptil now
 	// send date packets of different sizes and calculate the time difference and then calculate the latency and bandwidth
 
-	avg_rtt_64 = send_probes(next_hop_ip, 1664);
+	avg_rtt_64 = send_probes(next_hop_ip, 64);
 	printf("Average latency for 64 byte packet is %lf us\n", avg_rtt_64);
-	avg_rtt_80 = send_probes(next_hop_ip, 1680);
+	avg_rtt_80 = send_probes(next_hop_ip, 80);
 	printf("Average latency for 80 byte packet is %lf us\n", avg_rtt_80);
+	RTT_ARR[hop_len].rtt_64 = avg_rtt_64;
+	RTT_ARR[hop_len].rtt_80 = avg_rtt_80;
+
+	double rtt_diff_64 = avg_rtt_64;
+	double rtt_diff_80 = avg_rtt_80;
+
+	if (hop_len > 0)
+	{
+		rtt_diff_64 -= RTT_ARR[hop_len-1].rtt_64;
+		rtt_diff_80 -= RTT_ARR[hop_len-1].rtt_80;
+	}
 
 	// calculate bandwidth
-	bandwidth = (((sizeof(struct icmphdr) + 80.0) / avg_rtt_80) + (sizeof(struct icmphdr) + 64.0) / avg_rtt_64) / 2.0;
+	bandwidth = (((sizeof(struct icmphdr) + 80.0) / rtt_diff_80) + (sizeof(struct icmphdr) + 64.0) / rtt_diff_64) / 2.0;
 
 	// difference in latency is rate of transmission
-	rate = 16.0 / (avg_rtt_80 - avg_rtt_64);
+	rate = 16.0 / (rtt_diff_80 - rtt_diff_64);
 
-	latency = ((avg_rtt_64 - ((sizeof(struct icmphdr) + 64.0)) / rate) + (avg_rtt_80 - ((sizeof(struct icmphdr) + 80.0)) / rate)) / 2.0;
+	latency = ((rtt_diff_64 - ((sizeof(struct icmphdr) + 64.0)) / rate) + (rtt_diff_80 - ((sizeof(struct icmphdr) + 80.0)) / rate)) / 2.0;
 
 	printf("IP address %s\n", next_hop_ip);
 	printf("Latency: %lf us\n", latency);
@@ -310,7 +366,7 @@ int establish_link(int ttl)
 			{
 				printf("Next hop ip: %s\n", next_hop_ip);
 				printf("Estimating latency of link\n");
-				estimate_latency(next_hop_ip);
+				estimate_latency(next_hop_ip, ttl-1);
 			}
 			else
 			{
@@ -326,7 +382,7 @@ int establish_link(int ttl)
 			{
 				printf("Next hop ip: %s\n", inet_ntoa(dest_addr_con->sin_addr));
 				printf("Estimating latency of link\n");
-				estimate_latency(next_hop_ip);
+				estimate_latency(next_hop_ip, ttl-1);
 				return 1;
 			}
 			else
