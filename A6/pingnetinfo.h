@@ -36,8 +36,8 @@
 // port no of servers to connect to
 #define RECV_TIMEOUT 1
 // timeout for recvfrom() in seconds
-#define ICMP_PKT_SIZE 128
-#define IP_PKT_SIZE 176
+#define ICMP_PKT_SIZE 16128
+#define IP_PKT_SIZE 16176
 #define SLEEP_RATE 100
 #define MAX_HOPS 30
 #define N_MAX_IPS 20 

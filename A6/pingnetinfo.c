@@ -136,9 +136,9 @@ void estimate_latency(char *next_hop_ip)
 	// estimatate latency betweeen two adjacent ip addressess in a route,where hop is the number of hops uptil now
 	// send date packets of different sizes and calculate the time difference and then calculate the latency and bandwidth
 
-	avg_rtt_64 = send_probes(next_hop_ip, 64);
+	avg_rtt_64 = send_probes(next_hop_ip, 1664);
 	printf("Average latency for 64 byte packet is %lf us\n", avg_rtt_64);
-	avg_rtt_80 = send_probes(next_hop_ip, 80);
+	avg_rtt_80 = send_probes(next_hop_ip, 1680);
 	printf("Average latency for 80 byte packet is %lf us\n", avg_rtt_80);
 
 	// calculate bandwidth
