@@ -81,10 +81,10 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 		struct timeval currtime;
 		gettimeofday(&currtime, NULL);
 		
-		memcopy(&probe.message, &currtime, sizeof(currtime)); 
+		memcpy(&probe.message, &currtime, sizeof(currtime)); 
 		/* hoping memcopy is safe :( */
 
-		size_t sizeof_packet = &probe.message[msg_len] - &probe;
+		size_t sizeof_packet = &probe.message[msg_len] - (char*)&probe;
 		/* hoping msg_len would be big enough to contain the timestamp */
 
 		probe.header.checksum = checksum(&probe, sizeof_packet);
@@ -149,11 +149,13 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 			{
 				struct icmp_pkt *icmp = (struct icmp_pkt *)(reply_dump + sizeof(struct iphdr));
 
-				if (parse_icmp_packet(icmp) == ECHO_REPLY)
+				if (parse_icmp_packet((struct icmphdr*)icmp) == ECHO_REPLY)
 				{
 					success_cnt++; // where will the success_cnt be used though??
 					struct timeval currtime;
 					gettimeofday(&currtime, NULL);
+
+					printf("\t+ received reply for %d-th probe\n",success_cnt);
 
 					struct timeval sent_time = *(struct timeval *)icmp->message;
 					double rtt = (currtime.tv_sec - sent_time.tv_sec) * 1000000 + (currtime.tv_usec - sent_time.tv_usec);
