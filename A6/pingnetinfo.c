@@ -40,7 +40,7 @@ unsigned short checksum(void *b, int len)
 }
 int lookup_dns_and_assign(char *addr_host)
 {
-	printf("Resolving DNS\n");
+	printf("Resolving DNS\n\n");
 	struct hostent *host_entity;
 	if ((host_entity = gethostbyname(addr_host)) == NULL)
 	{
@@ -60,6 +60,18 @@ int lookup_dns_and_assign(char *addr_host)
 char *reverse_dns_lookup()
 {
 }
+void print_icmp_header(struct icmphdr* icmp_header)
+{
+	printf("+---------------------------+\n");
+	printf("|      ICMP Header          |\n");
+	printf("+---------------------------+\n");
+	printf("| Type         | %10d |\n", icmp_header->type);
+	printf("| Code         | %10d |\n", icmp_header->code);
+	printf("| Checksum     | %10d |\n", icmp_header->checksum);
+	printf("| Identifier   | %10d |\n", icmp_header->un.echo.id);
+	printf("| Seq Number   | %10d |\n", icmp_header->un.echo.sequence);
+	printf("+---------------------------+\n");
+}
 double send_probes(char *next_hop_ip, size_t msg_len)
 {
 	/* sends num_probe pings of size msg_len to next_hop_ip and returns minimum rtt */
@@ -71,6 +83,7 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 
 	char reply_dump[IP_PKT_SIZE];
 
+	printf("Sending %d probes of size %ld to %s\n", num_probes, msg_len, next_hop_ip);
 	for (int i = 0; i < num_probes; ++i)
 	{
 		struct icmp_pkt probe;
@@ -148,6 +161,7 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 			else if (hdr->protocol == IPPROTO_ICMP)
 			{
 				struct icmp_pkt *icmp = (struct icmp_pkt *)(reply_dump + sizeof(struct iphdr));
+				print_icmp_header(&icmp->header);
 
 				if (parse_icmp_packet((struct icmphdr*)icmp) == ECHO_REPLY)
 				{
@@ -185,10 +199,12 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 
 	// TODO: handle the case of -1 returned from send_probes
 
-	avg_rtt_64 = send_probes(next_hop_ip, 64);
-	printf("Average latency for 64 byte packet is %lf us\n", avg_rtt_64);
+	IP_ARR[hop_len] = strdup(next_hop_ip);
+
 	avg_rtt_80 = send_probes(next_hop_ip, 80);
 	printf("Average latency for 80 byte packet is %lf us\n", avg_rtt_80);
+	avg_rtt_64 = send_probes(next_hop_ip, 64);
+	printf("Average latency for 64 byte packet is %lf us\n", avg_rtt_64);
 	RTT_ARR[hop_len].rtt_64 = avg_rtt_64;
 	RTT_ARR[hop_len].rtt_80 = avg_rtt_80;
 
@@ -197,22 +213,38 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 
 	if (hop_len > 0)
 	{
-		rtt_diff_64 -= RTT_ARR[hop_len-1].rtt_64;
-		rtt_diff_80 -= RTT_ARR[hop_len-1].rtt_80;
+		rtt_diff_64 = (rtt_diff_64 - RTT_ARR[hop_len-1].rtt_64) / 2;
+		rtt_diff_80 = (rtt_diff_80 - RTT_ARR[hop_len-1].rtt_80) / 2;
 	}
 
-	// calculate bandwidth
-	bandwidth = (((sizeof(struct icmphdr) + 80.0) / rtt_diff_80) + (sizeof(struct icmphdr) + 64.0) / rtt_diff_64) / 2.0;
 
 	// difference in latency is rate of transmission
 	rate = 16.0 / (rtt_diff_80 - rtt_diff_64);
 
-	latency = ((rtt_diff_64 - ((sizeof(struct icmphdr) + 64.0)) / rate) + (rtt_diff_80 - ((sizeof(struct icmphdr) + 80.0)) / rate)) / 2.0;
+	// calculate latency
+	latency = ((sizeof(struct iphdr) + sizeof(struct icmphdr) + 64) * rtt_diff_64 - (sizeof(struct iphdr) + sizeof(struct icmphdr) + 80) * rtt_diff_80) / 26;
 
-	printf("IP address %s\n", next_hop_ip);
+	// calculate bandwidth
+	bandwidth = 26 / (rtt_diff_80 - rtt_diff_64);
+
+	
+	if (hop_len > 0)
+	{
+		printf("Link < %s - %s >\n", IP_ARR[hop_len-1], IP_ARR[hop_len]);
+	}
+	else
+	{
+		struct sockaddr_in myaddr;
+		socklen_t myaddr_len = sizeof(myaddr);
+		if (getsockname(sockfd, (struct sockaddr *)&myaddr, &myaddr_len) < 0)
+		{
+			perror("getsockname");
+			exit(EXIT_FAILURE);
+		}
+		printf("Link < %s - %s >\n", inet_ntoa(myaddr.sin_addr), IP_ARR[hop_len]);
+	}
 	printf("Latency: %lf us\n", latency);
 	printf("Bandwidth: %lf Mbps\n", bandwidth);
-	printf("Rate: %lf Mbps\n", rate);
 }
 void print_tcp_header(struct tcphdr *header)
 {
@@ -220,9 +252,7 @@ void print_tcp_header(struct tcphdr *header)
 void print_udp_header()
 {
 }
-void print_icmp_header()
-{
-}
+
 void print_ip_header()
 {
 }
@@ -293,7 +323,9 @@ int establish_link(int ttl)
 		}
 		else
 		{
-			printf("Received a packet on sending ttl = %d and packet type %d\n", ttl, recv_packet.icmp.header.type);
+			printf("Received ICMP packet on sending ttl = %d and packet type %d from %s\n", ttl, recv_packet.icmp.header.type, inet_ntoa(recv_addr.sin_addr));
+			struct icmphdr* hdr = (struct icmphdr*)(&recv_packet.icmp.header);
+			print_icmp_header(hdr);
 			flag = 1; // received a packet
 			break;
 		}
@@ -305,6 +337,7 @@ int establish_link(int ttl)
 		// check if packet received is icmp time limit exceeded
 		if (parse_icmp_packet(&recv_packet.icmp.header) == TIME_EXCEEDED)
 		{
+			printf("\nSending echo requests to %s to confirm next hop ...\n", inet_ntoa(recv_addr.sin_addr));
 			// check if the ip header of the packet received is the same as the ip header of the packet sent
 			// store ip address of the packet received
 			next_hop_ip = inet_ntoa(recv_addr.sin_addr);
@@ -323,7 +356,7 @@ int establish_link(int ttl)
 			next_hop_addr.sin_addr.s_addr = inet_addr(next_hop_ip);
 
 			int success_replies = 0;
-			for (int i = 1; i <= MAX_FIND_HOP_TRIES && success_replies < 5; ++i)
+			for (int i = 1; i <= 5; ++i)
 			{
 				// send echo request
 
@@ -337,44 +370,66 @@ int establish_link(int ttl)
 					printf("Error: Could not send echo request!\n");
 					continue;
 				}
-				// wait for an icmp packet to arrive with echo request
+				printf("ICMP echo request sent with following header:\n");
+				print_icmp_header(&send_packet.header);
+				
+
+				usleep(SLEEP_RATE);
+			}
+
+			for (int i = 1; i <= MAX_FIND_HOP_TRIES && success_replies < 5; ++i)
+			{
+				// recv echo replies
+
 				addr_len = sizeof(struct sockaddr_in);
-				if (recvfrom(sockfd, &recv_packet, sizeof(recv_packet), 0, (struct sockaddr *)&recv_addr, &addr_len) < 0)
+
+				struct pollfd fdset = {sockfd, POLLIN, 0};
+
+				int ret = poll(&fdset, 1, 1000);
+
+				if (ret < 0)
 				{
-					printf("Error: Could not receive echo reply!\n");
+					perror("poll");
+					exit(EXIT_FAILURE);
+				}
+				else if (ret == 0)
+				{
 					continue;
 				}
-				//! store packets in an array
-				//! packets may arrive out of order
-				//! packets may be non-consecutive
-				//! packets may be lost
-				//! packets may be duplicated
-				//! packets may be delayed
-				//! packets may be corrupted
-				//! at present naively assuming it comes as soon as u send
 				else
 				{
-					printf("Packet type received for echo request: %d\n", parse_icmp_packet(&recv_packet.icmp.header));
-					// check if packet received is icmp echo reply
-					if (parse_icmp_packet(&recv_packet.icmp.header) == ECHO_REPLY)
+					if (recvfrom(sockfd, &recv_packet, sizeof(recv_packet), 0, (struct sockaddr *)&recv_addr, &addr_len) < 0)
 					{
-						// check if the echo reply is for the same packet you sent as echo request
-						success_replies++;
+						printf("Error: Could not receive echo reply!\n");
+						continue;
+					}
+					else
+					{
+						parse_icmp_packet(&recv_packet.icmp.header);
+						printf("Received ICMP packet with following header:\n");
+						print_icmp_header(&recv_packet.icmp.header);
+						// check if packet received is icmp echo reply
+						if (parse_icmp_packet(&recv_packet.icmp.header) == ECHO_REPLY)
+						{
+							// check if the echo reply is for the same packet you sent as echo request
+							success_replies++;
+						}
 					}
 				}
+				
 
 				usleep(SLEEP_RATE);
 			}
 
 			if (success_replies == 5)
 			{
-				printf("Next hop ip: %s\n", next_hop_ip);
-				printf("Estimating latency of link\n");
+				printf("\nConfirmed next hop ip: %s\n", next_hop_ip);
+				printf("\nEstimating latency of link\n");
 				estimate_latency(next_hop_ip, ttl-1);
 			}
 			else
 			{
-				printf("Could not receive 5 consecutive echo replies, Cannot establish next hop\n");
+				printf("Could not receive 5 echo replies, cannot confirm next hop\n");
 			}
 		}
 		else
@@ -436,7 +491,7 @@ int main(int argc, char *argv[])
 	}
 
 	// debug statement
-	printf("The ip address of destination is %s\n", dest_ip);
+	printf("The ip address of destination is %s\n\n", dest_ip);
 
 	num_probes = atoi(argv[2]);
 	time_diff = atoi(argv[3]);

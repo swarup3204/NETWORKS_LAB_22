@@ -81,4 +81,6 @@ struct icmp_pkt ROUTE_IPS[N_MAX_IPS];
 // to store the icmp packets echo replies received till now
 struct sizewise_rtt RTT_ARR[N_MAX_IPS];
 
+char *IP_ARR[N_MAX_IPS];
+
 #endif
