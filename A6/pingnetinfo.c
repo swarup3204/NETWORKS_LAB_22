@@ -81,9 +81,15 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 	addr_con.sin_port = htons(PORT_NO);
 	addr_con.sin_addr.s_addr = inet_addr(next_hop_ip);
 
+	struct sockaddr_in recv_addr;
+	socklen_t addr_len = sizeof(recv_addr);
+
 	char reply_dump[IP_PKT_SIZE];
 
-	printf("Sending %d probes of size %ld to %s\n", num_probes, msg_len, next_hop_ip);
+	int success_cnt = 0;
+	int min_rtt = INT_MAX;
+
+	printf("\nSending %d probes of size %ld to %s\n", num_probes, msg_len, next_hop_ip);
 	for (int i = 0; i < num_probes; ++i)
 	{
 		struct icmp_pkt probe;
@@ -102,28 +108,18 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 
 		probe.header.checksum = checksum(&probe, sizeof_packet);
 
+		printf("Sending probe with header:\n");
+		print_icmp_header(&probe.header);
 		if (sendto(sockfd, &probe, sizeof_packet, 0, (struct sockaddr *)&addr_con, sizeof(addr_con)) < 0)
 		{
 			printf("Error: Could not send packet!\n");
 			exit(EXIT_FAILURE);
 		}
 
-		sleep(time_diff);
-		
-	}
-
-	/* now we have sent all the probes, now we need to receive the replies */
-	int success_cnt = 0;
-	int min_rtt = INT_MAX;
-
-	for (int i = 0; i < num_probes; ++i)
-	{
-		struct sockaddr_in recv_addr;
-		socklen_t addr_len = sizeof(recv_addr);
-
 		struct pollfd fdset = {sockfd, POLLIN, 0};
+		time_t start_time = time(NULL), end_time;
 
-		int ret = poll(&fdset, 1, 2000);
+		int ret = poll(&fdset, 1, time_diff*1000);
 
 		if (ret < 0)
 		{
@@ -134,7 +130,7 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 		else if (ret == 0)
 		{
 			/* probe timed out */
-			return -1;
+			continue;
 		}
 
 		else
@@ -145,7 +141,113 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 				exit(EXIT_FAILURE);
 			}
 
-			/* TODO: check if the IP header protocol is ICMP, if TCP or UDP print the same */
+
+			time(&end_time);
+
+			printf("Received reply ...\n");
+			
+
+			struct iphdr *hdr = (struct iphdr*)reply_dump;
+			if (hdr->protocol == IPPROTO_TCP)
+			{
+				printf("received TCP packet\n");
+			}
+			else if (hdr->protocol == IPPROTO_UDP)
+			{
+				printf("received UDP packet\n");
+			}
+			else if (hdr->protocol == IPPROTO_ICMP)
+			{
+				struct icmp_pkt *icmp = (struct icmp_pkt *)(reply_dump + sizeof(struct iphdr));
+				print_icmp_header(&icmp->header);
+
+				int type = parse_icmp_packet((struct icmphdr*)icmp);
+
+				if (type == ECHO_REPLY)
+				{
+					success_cnt++; // where will the success_cnt be used though??
+					struct timeval currtime;
+					gettimeofday(&currtime, NULL);
+
+					struct timeval sent_time = *(struct timeval *)icmp->message;
+					double rtt = (currtime.tv_sec - sent_time.tv_sec) * 1000000 + (currtime.tv_usec - sent_time.tv_usec);
+					
+					if (rtt < min_rtt)
+						min_rtt = rtt;
+				}
+				else if (type == TIME_EXCEEDED)
+				{
+
+				}
+				else
+				{
+					/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
+					struct ip_pkt c = *(struct ip_pkt*)reply_dump;
+					struct iphdr *encapsulating_ip_header = (struct iphdr *)c.message;
+					if (encapsulating_ip_header->protocol == IPPROTO_TCP)
+					{
+						printf("Received ICMP, sent due to dropping of TCP packet\n");
+					}
+					else if (encapsulating_ip_header->protocol == IPPROTO_UDP)
+					{
+						printf("Received ICMP, sent due to dropping of UDP packet\n");
+					}
+					else
+					{
+						printf("Received ICMP, sent due to dropping of unknown packet\n");
+					}
+				}
+			}
+			else
+			{
+				printf("unknown protocol\n");
+			}
+
+			int seconds_elapsed = end_time - start_time;
+			sleep(time_diff - seconds_elapsed);
+			
+		}
+
+		
+		
+	}
+
+	/* now we have sent all the probes, now we need to receive the replies */
+	
+
+	for (int i = 0; i < num_probes && success_cnt < num_probes; ++i)
+	{
+		if (i == 0)
+		{
+			printf("Waiting for remaining replies...\n");
+		}
+		struct pollfd fdset = {sockfd, POLLIN, 0};
+
+		int ret = poll(&fdset, 1, 1000);
+
+		if (ret < 0)
+		{
+			perror("poll");
+			exit(EXIT_FAILURE);
+		}
+
+		else if (ret == 0)
+		{
+			/* probe timed out */
+			continue;
+		}
+
+		else
+		{
+			if (recvfrom(sockfd, reply_dump, IP_PKT_SIZE, 0, (struct sockaddr *)&recv_addr, &addr_len) < 0)
+			{
+				printf("Error: Could not receive packet!\n");
+				exit(EXIT_FAILURE);
+			}
+
+
+			printf("Received reply ...\n");
+			print_icmp_header(&((struct icmp_pkt*)reply_dump)->header);
 
 			struct iphdr *hdr = (struct iphdr*)reply_dump;
 			if (hdr->protocol == IPPROTO_TCP)
@@ -163,13 +265,13 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 				struct icmp_pkt *icmp = (struct icmp_pkt *)(reply_dump + sizeof(struct iphdr));
 				print_icmp_header(&icmp->header);
 
-				if (parse_icmp_packet((struct icmphdr*)icmp) == ECHO_REPLY)
+				int type = parse_icmp_packet((struct icmphdr*)icmp);
+
+				if (type == ECHO_REPLY)
 				{
 					success_cnt++; // where will the success_cnt be used though??
 					struct timeval currtime;
 					gettimeofday(&currtime, NULL);
-
-					printf("\t+ received reply for %d-th probe\n",success_cnt);
 
 					struct timeval sent_time = *(struct timeval *)icmp->message;
 					double rtt = (currtime.tv_sec - sent_time.tv_sec) * 1000000 + (currtime.tv_usec - sent_time.tv_usec);
@@ -177,18 +279,45 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 					if (rtt < min_rtt)
 						min_rtt = rtt;
 				}
+				else if (type == TIME_EXCEEDED)
+				{
+
+				}
+				else
+				{
+					/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
+					struct ip_pkt c = *(struct ip_pkt*)reply_dump;
+					struct iphdr *encapsulating_ip_header = (struct iphdr *)c.message;
+					if (encapsulating_ip_header->protocol == IPPROTO_TCP)
+					{
+						printf("Received ICMP, sent due to dropping of TCP packet\n");
+					}
+					else if (encapsulating_ip_header->protocol == IPPROTO_UDP)
+					{
+						printf("Received ICMP, sent due to dropping of UDP packet\n");
+					}
+					else
+					{
+						printf("Received ICMP, sent due to dropping of unknown packet\n");
+					}
+				}
 			}
 			else
 			{
 				printf("unknown protocol\n");
 				continue; // or break??
 			}
-			
 		}
-
 	}
 
-	return min_rtt;
+	if (success_cnt < num_probes)
+	{
+		return -1;
+	}
+	else
+	{
+		return min_rtt;
+	}
 
 }
 void estimate_latency(char *next_hop_ip, int hop_len)
@@ -202,19 +331,34 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 	IP_ARR[hop_len] = strdup(next_hop_ip);
 
 	avg_rtt_80 = send_probes(next_hop_ip, 80);
-	printf("Average latency for 80 byte packet is %lf us\n", avg_rtt_80);
+	printf("Min RTT for 80 byte packet is %lf us\n", avg_rtt_80);
 	avg_rtt_64 = send_probes(next_hop_ip, 64);
-	printf("Average latency for 64 byte packet is %lf us\n", avg_rtt_64);
+	printf("Min RTT for 64 byte packet is %lf us\n", avg_rtt_64);
 	RTT_ARR[hop_len].rtt_64 = avg_rtt_64;
 	RTT_ARR[hop_len].rtt_80 = avg_rtt_80;
 
-	double rtt_diff_64 = avg_rtt_64;
-	double rtt_diff_80 = avg_rtt_80;
+	double rtt_diff_64 , rtt_diff_80;
 
 	if (hop_len > 0)
 	{
+		if (RTT_ARR[hop_len].rtt_64 < 0 || RTT_ARR[hop_len].rtt_80 < 0 || RTT_ARR[hop_len-1].rtt_64 < 0 || RTT_ARR[hop_len-1].rtt_80 < 0)
+		{
+			printf("This or previous hop does not reply to pings, cannot estimate latency and bandwidth\n");
+			return;
+		}
+
 		rtt_diff_64 = (rtt_diff_64 - RTT_ARR[hop_len-1].rtt_64) / 2;
 		rtt_diff_80 = (rtt_diff_80 - RTT_ARR[hop_len-1].rtt_80) / 2;
+	}
+	else
+	{
+		if (RTT_ARR[hop_len].rtt_64 < 0 || RTT_ARR[hop_len].rtt_80 < 0)
+		{
+			printf("This hop does not reply to pings, cannot estimate latency and bandwidth\n");
+			return;
+		}
+		rtt_diff_64 = avg_rtt_64 / 2;
+		rtt_diff_80 = avg_rtt_80 / 2;
 	}
 
 
@@ -222,10 +366,10 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 	rate = 16.0 / (rtt_diff_80 - rtt_diff_64);
 
 	// calculate latency
-	latency = ((sizeof(struct iphdr) + sizeof(struct icmphdr) + 64) * rtt_diff_64 - (sizeof(struct iphdr) + sizeof(struct icmphdr) + 80) * rtt_diff_80) / 26;
+	latency = ((sizeof(struct iphdr) + sizeof(struct icmphdr) + 64) * rtt_diff_64 - (sizeof(struct iphdr) + sizeof(struct icmphdr) + 80) * rtt_diff_80) / 16;
 
 	// calculate bandwidth
-	bandwidth = 26 / (rtt_diff_80 - rtt_diff_64);
+	bandwidth = 16 / (rtt_diff_80 - rtt_diff_64);
 
 	
 	if (hop_len > 0)
@@ -234,17 +378,12 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 	}
 	else
 	{
-		struct sockaddr_in myaddr;
-		socklen_t myaddr_len = sizeof(myaddr);
-		if (getsockname(sockfd, (struct sockaddr *)&myaddr, &myaddr_len) < 0)
-		{
-			perror("getsockname");
-			exit(EXIT_FAILURE);
-		}
-		printf("Link < %s - %s >\n", inet_ntoa(myaddr.sin_addr), IP_ARR[hop_len]);
+		printf("\nLink < %s - %s > summary:\n", "source", IP_ARR[hop_len]);
 	}
-	printf("Latency: %lf us\n", latency);
-	printf("Bandwidth: %lf Mbps\n", bandwidth);
+
+
+	printf("Latency      : %lf us\n", latency);
+	printf("Bandwidth    : %lf Mbps\n", bandwidth);
 }
 void print_tcp_header(struct tcphdr *header)
 {
@@ -323,7 +462,7 @@ int establish_link(int ttl)
 		}
 		else
 		{
-			printf("Received ICMP packet on sending ttl = %d and packet type %d from %s\n", ttl, recv_packet.icmp.header.type, inet_ntoa(recv_addr.sin_addr));
+			printf("\nReceived ICMP packet on sending ttl = %d and packet type %d from %s\n", ttl, recv_packet.icmp.header.type, inet_ntoa(recv_addr.sin_addr));
 			struct icmphdr* hdr = (struct icmphdr*)(&recv_packet.icmp.header);
 			print_icmp_header(hdr);
 			flag = 1; // received a packet
@@ -409,10 +548,32 @@ int establish_link(int ttl)
 						printf("Received ICMP packet with following header:\n");
 						print_icmp_header(&recv_packet.icmp.header);
 						// check if packet received is icmp echo reply
-						if (parse_icmp_packet(&recv_packet.icmp.header) == ECHO_REPLY)
+						int type = parse_icmp_packet(&recv_packet.icmp.header);
+						if (type == ECHO_REPLY)
 						{
 							// check if the echo reply is for the same packet you sent as echo request
 							success_replies++;
+						}
+						else if (type == TIME_EXCEEDED)
+						{
+							
+						}
+						else
+						{
+							/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
+							struct iphdr *encapsulating_ip_header = (struct iphdr *)recv_packet.message;
+							if (encapsulating_ip_header->protocol == IPPROTO_TCP)
+							{
+								printf("Received ICMP, sent due to dropping of TCP packet\n");
+							}
+							else if (encapsulating_ip_header->protocol == IPPROTO_UDP)
+							{
+								printf("Received ICMP, sent due to dropping of UDP packet\n");
+							}
+							else
+							{
+								printf("Received ICMP, sent due to dropping of unknown packet\n");
+					}
 						}
 					}
 				}
@@ -446,7 +607,20 @@ int establish_link(int ttl)
 			}
 			else
 			{
-				printf("Cannot establish next hop\n");
+				/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
+				struct iphdr *encapsulating_ip_header = (struct iphdr *)recv_packet.message;
+				if (encapsulating_ip_header->protocol == IPPROTO_TCP)
+				{
+					printf("Received ICMP, sent due to dropping of TCP packet\n");
+				}
+				else if (encapsulating_ip_header->protocol == IPPROTO_UDP)
+				{
+					printf("Received ICMP, sent due to dropping of UDP packet\n");
+				}
+				else
+				{
+					printf("Received ICMP, sent due to dropping of unknown packet\n");
+				}
 			}
 		}
 	}
@@ -465,6 +639,11 @@ int main(int argc, char *argv[])
 	// 1.site to probe
 	// 2.number of probes per link
 	// 3.time difference between any two probes
+	memset(IP_ARR, 0, sizeof(IP_ARR));
+	for (int i = 0; i < MAX_HOPS; ++i)
+	{
+		RTT_ARR[i].rtt_64 = RTT_ARR[i].rtt_80 = -1;
+	}
 	dest_addr_con = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
 	if (argc != 4)
 	{

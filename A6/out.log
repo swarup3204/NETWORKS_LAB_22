@@ -1,0 +1,1387 @@
+Resolving DNS
+
+The ip address of destination is 23.39.5.154
+
+
+Received ICMP packet on sending ttl = 1 and packet type 11 from 192.168.43.1
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      44707 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 192.168.43.1 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42425 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42424 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42423 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42422 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42421 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42433 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42432 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42431 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42430 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42429 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 192.168.43.1
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 192.168.43.1
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      18774 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      18782 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      16556 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      16564 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      31750 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      31758 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 80 byte packet is 1977.000000 us
+
+Sending 3 probes of size 64 to 192.168.43.1
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      44811 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      44819 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      47508 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      47516 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      21913 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      21921 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 64 byte packet is 25352.000000 us
+
+Link < source - 192.168.43.1 > summary:
+Latency      : 40747.461538 us
+Bandwidth    : -0.002225 Mbps
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Could not receive any icmp packet, Cannot establish next hop
+
+Received ICMP packet on sending ttl = 3 and packet type 11 from 10.61.38.240
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 10.61.38.240 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42425 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42424 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42423 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42422 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42421 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42433 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42432 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42431 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42430 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42429 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 10.61.38.240
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 10.61.38.240
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      59894 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      59902 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |       1634 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |       1642 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      45198 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      45206 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 80 byte packet is 58027.000000 us
+
+Sending 3 probes of size 64 to 10.61.38.240
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      41174 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      41182 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |       1203 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |       1211 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      12096 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      12104 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 64 byte packet is 105256.000000 us
+This or previous hop does not reply to pings, cannot estimate latency and bandwidth
+
+Received ICMP packet on sending ttl = 4 and packet type 11 from 10.61.34.216
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 10.61.34.216 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42425 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42424 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42423 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42422 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42421 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42433 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42432 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42431 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42430 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42429 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 10.61.34.216
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 10.61.34.216
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      23283 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      23291 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      64365 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      64373 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      43826 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      43834 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 80 byte packet is 41322.000000 us
+
+Sending 3 probes of size 64 to 10.61.34.216
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      38846 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      38854 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      47272 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      47280 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      62724 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      62732 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 64 byte packet is 115406.000000 us
+Link < 10.61.38.240 - 10.61.34.216 >
+Latency      : -65704.538462 us
+Bandwidth    : 0.001101 Mbps
+
+Received ICMP packet on sending ttl = 5 and packet type 11 from 125.22.219.193
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 125.22.219.193 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42425 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42424 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42423 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42422 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42421 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42433 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42432 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42431 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42430 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42429 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 125.22.219.193
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 125.22.219.193
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      57640 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      57648 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      36529 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      36537 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      27077 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      27085 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 80 byte packet is 37835.000000 us
+
+Sending 3 probes of size 64 to 125.22.219.193
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      59159 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      59167 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      62299 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      62307 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      38447 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      38455 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 64 byte packet is 89137.000000 us
+Link < 10.61.34.216 - 125.22.219.193 >
+Latency      : -118357.230769 us
+Bandwidth    : 0.000702 Mbps
+
+Received ICMP packet on sending ttl = 6 and packet type 11 from 116.119.57.156
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 116.119.57.156 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42425 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42424 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42423 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42422 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      42421 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42433 |
+| Identifier   |      23101 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42432 |
+| Identifier   |      23101 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42431 |
+| Identifier   |      23101 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42430 |
+| Identifier   |      23101 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      42429 |
+| Identifier   |      23101 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 116.119.57.156
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 116.119.57.156
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      58872 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      58880 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      19568 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      19576 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      54910 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      54918 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 80 byte packet is 104622.000000 us
+
+Sending 3 probes of size 64 to 116.119.57.156
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      43929 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      43937 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      53280 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      53288 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      50764 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      50772 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 64 byte packet is 186990.000000 us
+Link < 125.22.219.193 - 116.119.57.156 >
+Latency      : -79123.538462 us
+Bandwidth    : 0.001014 Mbps
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Error: Could not receive tle icmp send_packet!
+Could not receive any icmp packet, Cannot establish next hop
+
+Received ICMP packet on sending ttl = 8 and packet type 0 from 23.39.5.154
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |       1571 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Could not receive icmp time exceeded, Received icmp packet type: 0
+Next hop ip: 23.39.5.154
+Estimating latency of link
+
+Sending 3 probes of size 80 to 23.39.5.154
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      14486 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      14494 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      10815 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      10823 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      51657 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      51665 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 80 byte packet is 155636.000000 us
+
+Sending 3 probes of size 64 to 23.39.5.154
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      56112 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      56120 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      37087 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      37095 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      59939 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      59947 |
+| Identifier   |      23101 |
+| Seq Number   |          0 |
++---------------------------+
+Min RTT for 64 byte packet is 149840.000000 us
+This or previous hop does not reply to pings, cannot estimate latency and bandwidth
+Reached destination!
