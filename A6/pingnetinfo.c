@@ -361,8 +361,6 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 		rtt_diff_80 = avg_rtt_80 / 2;
 	}
 
-
-	// difference in latency is rate of transmission
 	rate = 16.0 / (rtt_diff_80 - rtt_diff_64);
 
 	// calculate latency
@@ -383,7 +381,7 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 
 
 	printf("Latency      : %lf us\n", latency);
-	printf("Bandwidth    : %lf Mbps\n", bandwidth);
+	printf("Bandwidth    : %lf Mbps\n\n", bandwidth);
 }
 void print_tcp_header(struct tcphdr *header)
 {
