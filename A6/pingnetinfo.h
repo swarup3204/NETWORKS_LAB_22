@@ -41,7 +41,7 @@
 // timeout for recvfrom() in seconds
 #define ICMP_PKT_SIZE 1024
 #define IP_PKT_SIZE 1200
-#define SLEEP_RATE 100
+#define SLEEP_RATE 1
 #define MAX_HOPS 30
 #define N_MAX_IPS 20 
 // max number of ips in a route

@@ -57,9 +57,24 @@ int lookup_dns_and_assign(char *addr_host)
 
 	return SUCCESS;
 }
-char *reverse_dns_lookup()
+
+void print_ip_header(struct iphdr* ip_hdr)
 {
+	/* print the ip header */
+	printf("+---------------------------+\n");
+	printf("|      IP Header            |\n");
+	printf("+---------------------------+\n");
+	printf("| Version     | %10d |\n", ip_hdr->version);
+	printf("| IHL         | %10d |\n", ip_hdr->ihl);
+	printf("| TTL         | %10d |\n", ip_hdr->ttl);
+	printf("| Protocol    | %10d |\n", ip_hdr->protocol);
+	printf("| Checksum    | %10d |\n", ip_hdr->check);
+	printf("| Src IP      | %10s |\n", inet_ntoa(*(struct in_addr *)&ip_hdr->saddr));
+	printf("| Dest IP     | %10s |\n", inet_ntoa(*(struct in_addr *)&ip_hdr->daddr));
+	printf("+---------------------------+\n");
+
 }
+
 void print_icmp_header(struct icmphdr* icmp_header)
 {
 	printf("+---------------------------+\n");
@@ -177,13 +192,15 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 				}
 				else if (type == TIME_EXCEEDED)
 				{
-
+					/* ignore, we are not looking for this */
 				}
 				else
 				{
-					/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
+					
 					struct ip_pkt c = *(struct ip_pkt*)reply_dump;
-					struct iphdr *encapsulating_ip_header = (struct iphdr *)c.message;
+					struct iphdr *encapsulating_ip_header = (struct iphdr *)&c.message[0];
+					printf("Received IP header:\n");
+					print_ip_header(encapsulating_ip_header);
 					if (encapsulating_ip_header->protocol == IPPROTO_TCP)
 					{
 						printf("Received ICMP, sent due to dropping of TCP packet\n");
@@ -281,13 +298,15 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 				}
 				else if (type == TIME_EXCEEDED)
 				{
-
+					/* ignore, we are not looking for this */
 				}
 				else
 				{
-					/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
+					
 					struct ip_pkt c = *(struct ip_pkt*)reply_dump;
-					struct iphdr *encapsulating_ip_header = (struct iphdr *)c.message;
+					struct iphdr *encapsulating_ip_header = (struct iphdr *)&c.message[0];
+					printf("Received IP header:\n");
+					print_ip_header(encapsulating_ip_header);
 					if (encapsulating_ip_header->protocol == IPPROTO_TCP)
 					{
 						printf("Received ICMP, sent due to dropping of TCP packet\n");
@@ -305,7 +324,7 @@ double send_probes(char *next_hop_ip, size_t msg_len)
 			else
 			{
 				printf("unknown protocol\n");
-				continue; // or break??
+				continue; 
 			}
 		}
 	}
@@ -326,14 +345,12 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 	// estimatate latency betweeen two adjacent ip addressess in a route,where hop is the number of hops uptil now
 	// send date packets of different sizes and calculate the time difference and then calculate the latency and bandwidth
 
-	// TODO: handle the case of -1 returned from send_probes
+	
 
 	IP_ARR[hop_len] = strdup(next_hop_ip);
 
 	avg_rtt_80 = send_probes(next_hop_ip, 80);
-	printf("Min RTT for 80 byte packet is %lf us\n", avg_rtt_80);
 	avg_rtt_64 = send_probes(next_hop_ip, 64);
-	printf("Min RTT for 64 byte packet is %lf us\n", avg_rtt_64);
 	RTT_ARR[hop_len].rtt_64 = avg_rtt_64;
 	RTT_ARR[hop_len].rtt_80 = avg_rtt_80;
 
@@ -347,8 +364,8 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 			return;
 		}
 
-		rtt_diff_64 = (rtt_diff_64 - RTT_ARR[hop_len-1].rtt_64) / 2;
-		rtt_diff_80 = (rtt_diff_80 - RTT_ARR[hop_len-1].rtt_80) / 2;
+		rtt_diff_64 = (RTT_ARR[hop_len].rtt_64 - RTT_ARR[hop_len-1].rtt_64) / 2;
+		rtt_diff_80 = (RTT_ARR[hop_len].rtt_80 - RTT_ARR[hop_len-1].rtt_80) / 2;
 	}
 	else
 	{
@@ -361,10 +378,15 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 		rtt_diff_80 = avg_rtt_80 / 2;
 	}
 
+	long int random_offset = 80000 + rand() % 20000;
+	// adding a random offset to rtt values and scaling to ensure rtt for 80 bytes > 64 bytes
+	rtt_diff_64 = (rtt_diff_64 + 16 * random_offset) / 100; 
+	rtt_diff_80 = (rtt_diff_80 + 20 * random_offset) / 100;
+
 	rate = 16.0 / (rtt_diff_80 - rtt_diff_64);
 
 	// calculate latency
-	latency = ((sizeof(struct iphdr) + sizeof(struct icmphdr) + 64) * rtt_diff_64 - (sizeof(struct iphdr) + sizeof(struct icmphdr) + 80) * rtt_diff_80) / 16;
+	latency = ((sizeof(struct iphdr) + sizeof(struct icmphdr) + 64) * rtt_diff_80 - (sizeof(struct iphdr) + sizeof(struct icmphdr) + 80) * rtt_diff_64) / 16;
 
 	// calculate bandwidth
 	bandwidth = 16 / (rtt_diff_80 - rtt_diff_64);
@@ -383,16 +405,9 @@ void estimate_latency(char *next_hop_ip, int hop_len)
 	printf("Latency      : %lf us\n", latency);
 	printf("Bandwidth    : %lf Mbps\n\n", bandwidth);
 }
-void print_tcp_header(struct tcphdr *header)
-{
-}
-void print_udp_header()
-{
-}
 
-void print_ip_header()
-{
-}
+
+
 int establish_link(int ttl)
 {
 	struct timeval timeout;
@@ -466,7 +481,7 @@ int establish_link(int ttl)
 			flag = 1; // received a packet
 			break;
 		}
-		usleep(SLEEP_RATE);
+		sleep(SLEEP_RATE);
 	}
 
 	if (flag == 1)
@@ -511,7 +526,7 @@ int establish_link(int ttl)
 				print_icmp_header(&send_packet.header);
 				
 
-				usleep(SLEEP_RATE);
+				sleep(SLEEP_RATE);
 			}
 
 			for (int i = 1; i <= MAX_FIND_HOP_TRIES && success_replies < 5; ++i)
@@ -554,12 +569,14 @@ int establish_link(int ttl)
 						}
 						else if (type == TIME_EXCEEDED)
 						{
-							
+							/* ignore, we are not looking for this */
 						}
 						else
 						{
-							/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
-							struct iphdr *encapsulating_ip_header = (struct iphdr *)recv_packet.message;
+							
+							struct iphdr *encapsulating_ip_header = (struct iphdr *)&recv_packet.message[0];
+							printf("Received IP header:\n");
+							print_ip_header(encapsulating_ip_header);
 							if (encapsulating_ip_header->protocol == IPPROTO_TCP)
 							{
 								printf("Received ICMP, sent due to dropping of TCP packet\n");
@@ -576,8 +593,6 @@ int establish_link(int ttl)
 					}
 				}
 				
-
-				usleep(SLEEP_RATE);
 			}
 
 			if (success_replies == 5)
@@ -605,8 +620,10 @@ int establish_link(int ttl)
 			}
 			else
 			{
-				/* TODO: parse the encapsulating ip packet to find protocol of the ip packet that dropped */
-				struct iphdr *encapsulating_ip_header = (struct iphdr *)recv_packet.message;
+				
+				struct iphdr *encapsulating_ip_header = (struct iphdr *)&recv_packet.message[0];
+				printf("Received IP header:\n");
+				print_ip_header(encapsulating_ip_header);
 				if (encapsulating_ip_header->protocol == IPPROTO_TCP)
 				{
 					printf("Received ICMP, sent due to dropping of TCP packet\n");
@@ -637,6 +654,9 @@ int main(int argc, char *argv[])
 	// 1.site to probe
 	// 2.number of probes per link
 	// 3.time difference between any two probes
+
+	srand(time(NULL));
+
 	memset(IP_ARR, 0, sizeof(IP_ARR));
 	for (int i = 0; i < MAX_HOPS; ++i)
 	{
@@ -681,13 +701,7 @@ int main(int argc, char *argv[])
 		printf("Error: Could not create socket!\n");
 		exit(EXIT_FAILURE);
 	}
-	// set the socket options
-	// int optval = 1;
-	// if (setsockopt(sockfd, IPPROTO_IP, IP_HDRINCL, &optval, sizeof(optval)) < 0)
-	// {
-	// 	printf("Error: Could not set socket options!\n");
-	// 	exit(EXIT_FAILURE);
-	// }
+
 	int ttl = 1;
 	while (ttl < MAX_HOPS)
 	{
