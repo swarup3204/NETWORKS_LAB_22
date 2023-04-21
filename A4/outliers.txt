@@ -28,3 +28,4 @@ PUT http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/new.txt:20000 old
 
 PUT http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/new_img.jpg:20000 smol_img.jpg
 PUT http://127.0.0.1/home/swarup/Desktop/SEM_6/NETWORKS_LAB/A4/new.pdf:20000 vsp.pdf
+PUT http://127.0.0.1/home/swarup/report_new.txt:20000 outliers.txt
