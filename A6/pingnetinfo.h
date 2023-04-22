@@ -14,10 +14,13 @@
 #include <netinet/ip.h>
 #include <netdb.h>
 #include <sys/time.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <poll.h>
+#include <limits.h>
 
 
 #define ECHO_REQUEST 1
@@ -36,9 +39,9 @@
 // port no of servers to connect to
 #define RECV_TIMEOUT 1
 // timeout for recvfrom() in seconds
-#define ICMP_PKT_SIZE 16128
-#define IP_PKT_SIZE 16176
-#define SLEEP_RATE 100
+#define ICMP_PKT_SIZE 1024
+#define IP_PKT_SIZE 1200
+#define SLEEP_RATE 1
 #define MAX_HOPS 30
 #define N_MAX_IPS 20 
 // max number of ips in a route
@@ -63,6 +66,11 @@ struct ip_pkt
 	char message[IP_PKT_SIZE - sizeof(struct iphdr) - sizeof(struct icmphdr)];
 };
 // a structure to store the ip packet with total size of 128 bytes
+struct sizewise_rtt
+{
+	double rtt_64;
+	double rtt_80;
+};
 
 int num_probes;
 // a global variable to store the number of probes to be sent per link
@@ -71,5 +79,8 @@ int time_diff;
 
 struct icmp_pkt ROUTE_IPS[N_MAX_IPS];
 // to store the icmp packets echo replies received till now
+struct sizewise_rtt RTT_ARR[N_MAX_IPS];
+
+char *IP_ARR[N_MAX_IPS];
 
 #endif

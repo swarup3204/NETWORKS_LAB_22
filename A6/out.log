@@ -1,0 +1,883 @@
+Resolving DNS
+
+The ip address of destination is 10.3.100.102
+
+
+Received ICMP packet on sending ttl = 1 and packet type 11 from 10.147.128.3
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 10.147.128.3 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32590 |
+| Identifier   |      32936 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32589 |
+| Identifier   |      32936 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32588 |
+| Identifier   |      32936 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32587 |
+| Identifier   |      32936 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32586 |
+| Identifier   |      32936 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32598 |
+| Identifier   |      32936 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32597 |
+| Identifier   |      32936 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32596 |
+| Identifier   |      32936 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32595 |
+| Identifier   |      32936 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32594 |
+| Identifier   |      32936 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 10.147.128.3
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 10.147.128.3
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |       9654 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |       9662 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      17721 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      17729 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      63998 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      64006 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending 3 probes of size 64 to 10.147.128.3
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      24545 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      24553 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |       2975 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |       2983 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      49887 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      49895 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+
+Link < source - 10.147.128.3 > summary:
+Latency      : 6964.883750 us
+Bandwidth    : 0.004407 Mbps
+
+
+Received ICMP packet on sending ttl = 2 and packet type 11 from 10.118.1.190
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 10.118.1.190 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32590 |
+| Identifier   |      32936 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32589 |
+| Identifier   |      32936 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32588 |
+| Identifier   |      32936 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32587 |
+| Identifier   |      32936 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32586 |
+| Identifier   |      32936 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32598 |
+| Identifier   |      32936 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32597 |
+| Identifier   |      32936 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32596 |
+| Identifier   |      32936 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32595 |
+| Identifier   |      32936 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32594 |
+| Identifier   |      32936 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 10.118.1.190
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 10.118.1.190
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      35131 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      35139 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      46718 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      46726 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      10491 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      10499 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending 3 probes of size 64 to 10.118.1.190
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      30941 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      30949 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |       8327 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |       8335 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      36785 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      36793 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Link < 10.147.128.3 - 10.118.1.190 >
+Latency      : 6804.066250 us
+Bandwidth    : 0.004053 Mbps
+
+
+Received ICMP packet on sending ttl = 3 and packet type 11 from 10.118.1.169
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |         11 |
+| Code         |          0 |
+| Checksum     |      40852 |
+| Identifier   |          0 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending echo requests to 10.118.1.169 to confirm next hop ...
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32590 |
+| Identifier   |      32936 |
+| Seq Number   |          1 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32589 |
+| Identifier   |      32936 |
+| Seq Number   |          2 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32588 |
+| Identifier   |      32936 |
+| Seq Number   |          3 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32587 |
+| Identifier   |      32936 |
+| Seq Number   |          4 |
++---------------------------+
+ICMP echo request sent with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      32586 |
+| Identifier   |      32936 |
+| Seq Number   |          5 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32598 |
+| Identifier   |      32936 |
+| Seq Number   |          1 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32597 |
+| Identifier   |      32936 |
+| Seq Number   |          2 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32596 |
+| Identifier   |      32936 |
+| Seq Number   |          3 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32595 |
+| Identifier   |      32936 |
+| Seq Number   |          4 |
++---------------------------+
+Received ICMP packet with following header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      32594 |
+| Identifier   |      32936 |
+| Seq Number   |          5 |
++---------------------------+
+
+Confirmed next hop ip: 10.118.1.169
+
+Estimating latency of link
+
+Sending 3 probes of size 80 to 10.118.1.169
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      50128 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      50136 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      11101 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      11109 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      57035 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      57043 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending 3 probes of size 64 to 10.118.1.169
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      41960 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      41968 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      31834 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      31842 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      50452 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      50460 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Link < 10.118.1.190 - 10.118.1.169 >
+Latency      : 3948.093750 us
+Bandwidth    : 0.005258 Mbps
+
+
+Received ICMP packet on sending ttl = 4 and packet type 0 from 10.3.100.102
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      57271 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Could not receive icmp time exceeded, Received icmp packet type: 0
+Next hop ip: 10.3.100.102
+Estimating latency of link
+
+Sending 3 probes of size 80 to 10.3.100.102
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      35872 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      35880 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      17642 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      17650 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      11457 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      11465 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+
+Sending 3 probes of size 64 to 10.3.100.102
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      25580 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      25588 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      33082 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      33090 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Sending probe with header:
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          8 |
+| Code         |          0 |
+| Checksum     |      22320 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Received reply ...
++---------------------------+
+|      ICMP Header          |
++---------------------------+
+| Type         |          0 |
+| Code         |          0 |
+| Checksum     |      22328 |
+| Identifier   |      32936 |
+| Seq Number   |          0 |
++---------------------------+
+Link < 10.118.1.169 - 10.3.100.102 >
+Latency      : 5545.510000 us
+Bandwidth    : 0.004982 Mbps
+
+Reached destination!
